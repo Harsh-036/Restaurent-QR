@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['customer', 'admin'],
-    default: 'customers'
+    default: 'customer'
   },
   isActive: {
     type: Boolean
@@ -27,11 +27,18 @@ const userSchema = new mongoose.Schema({
   totalOrders: {
     type: Number
   },
-  loyalPoints: {
+  loyaltyPoints: {
     type: Number
   },
   refreshToken: {
     type: String
+  },
+  refreshTokenExpiresTime: {
+    type: Date
+  },
+  lastLogin: {
+    type: Date,
+    default: Date.now
   }
 });
 
