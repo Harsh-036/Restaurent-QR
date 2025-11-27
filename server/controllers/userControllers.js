@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import jwtConfig from "../config/jwt.js";
 
-// Generate Tokens
 const generateTokens = (user) => {
     const accessToken = jwt.sign(
         { id: user._id, email: user.email },
@@ -20,7 +19,7 @@ const generateTokens = (user) => {
     return { accessToken, refreshToken };
 };
 
-// REGISTER
+
 export const register = async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
