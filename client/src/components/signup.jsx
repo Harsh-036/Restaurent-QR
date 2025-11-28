@@ -1,4 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { signupUser } from '../redux/authSlice'
 
 export default function Signup() {
   const [name, setName] = useState('')
@@ -6,10 +9,30 @@ export default function Signup() {
   const [password, setPassword] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
 
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { loading, error, isAuthenticated } = useSelector((state) => state.auth)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      alert('Signup successful!')
+      navigate('/login')
+    }
+  }, [isAuthenticated, navigate])
+
+  useEffect(() => {
+    if (error) {
+      alert('Signup failed. Please re-enter details.')
+      setName('')
+      setEmail('')
+      setPassword('')
+      setPhoneNumber('')
+    }
+  }, [error])
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle signup logic here
-    console.log('Signup attempt:', { name, email, password, phoneNumber })
+    dispatch(signupUser({ name, email, phone: phoneNumber, password }))
   }
 
   return (

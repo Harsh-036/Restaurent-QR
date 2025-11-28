@@ -1,13 +1,34 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { loginUser } from '../redux/authSlice'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { loading, error, isAuthenticated } = useSelector((state) => state.auth)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      alert('Login successful!')
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate])
+
+  useEffect(() => {
+    if (error) {
+      alert('Login failed. Please re-enter email and password.')
+      setEmail('')
+      setPassword('')
+    }
+  }, [error])
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle login logic here
-    console.log('Login attempt:', { email, password })
+    dispatch(loginUser({ email, password }))
   }
 
   return (
