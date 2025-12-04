@@ -3,16 +3,16 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Login from './components/login'
 import Signup from './components/signup'
 import Navbar from './components/navbar'
+import Home from './components/Home'
 
 const App = () => {
   return (
     <Router>
       <div>
-        <Navbar />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<div>Welcome to Restaurent QR</div>} />
+          <Route path="/" element={<Home />} />
         </Routes>
       </div>
     </Router>

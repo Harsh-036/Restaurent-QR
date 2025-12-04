@@ -57,13 +57,25 @@ export const login = async (req, res) => {
 
         const { accessToken, refreshToken } = generateTokens(user);
 
+        // Calculate refresh token expiry time (7 days from now)
+        const refreshTokenExpiryTime = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
         user.refreshToken = refreshToken;
+        user.refreshTokenExpiresTime = refreshTokenExpiryTime;
         await user.save();
 
+        // Calculate remaining time in days and hours
+        const now = new Date();
+        const timeDiff = refreshTokenExpiryTime - now;
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const expiryMessage = `Refresh token expires in ${days} days and ${hours} hours`;
+
         res.json({
-            message: "Login successful",
+            user,
             accessToken,
-            refreshToken
+            refreshToken,
+            refreshTokenExpiry: expiryMessage
         });
 
     } catch (error) {
