@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { act } from 'react';
 
 // Async thunk for login
 export const loginUser = createAsyncThunk(
@@ -74,10 +75,13 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        console.log(action.payload)
         state.loading = false;
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.refreshTokenExpiry = action.payload.refreshTokenExpiry;
+        localStorage.setItem('accessToken', action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
