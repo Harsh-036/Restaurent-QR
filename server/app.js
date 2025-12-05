@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import dbConnect from './config/database.js';
 import userRoutes from "./routes/userRoutes.js";
+import verifyToken from './middleware/verifyToken.js';
 
 
 
@@ -13,6 +14,9 @@ app.use(express.json())
 // fn used for mongodb connection
 
 dbConnect()
+app.get('/menu', verifyToken, (req, res) => {
+    res.send({ message: 'Menu is available for you' });
+});
 
 app.get('/', (req,res)=>{
     res.send('Homepage')
