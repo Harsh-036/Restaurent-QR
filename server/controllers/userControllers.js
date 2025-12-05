@@ -5,7 +5,7 @@ import jwtConfig from "../config/jwt.js";
 
 const generateTokens = (user) => {
     const accessToken = jwt.sign(
-        { id: user._id, email: user.email },
+        { id: user._id, name: user.name, email: user.email, role: user.role },
         jwtConfig.accessTokenSecret,
         { expiresIn: jwtConfig.accessTokenExpiry }
     );

@@ -21,6 +21,7 @@ const verifyToken = async (req, res, next) => {
                 return res.status(403).json({ message: 'User not found or inactive' });
             }
             req.user = user; // Attach full user object to request
+            // console.log(decoded)
             next();
         } catch (error) {
             return res.status(500).json({ message: 'Server error during user verification' });
