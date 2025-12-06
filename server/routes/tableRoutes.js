@@ -9,7 +9,7 @@ router.post('/tables',createTable )
 router.get('/tables/:slug' , getTableBySlug)
 router.get('/tables' , verifyToken , checkRole(['admin']), getAllTables)
 router.put('/tables/:id', updateTable)
-router.delete('/tables/:id', verifyToken, checkRole(['admin']), deleteTable)
+router.delete('/tables/:id', deleteTable)
 
 
 

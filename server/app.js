@@ -6,6 +6,7 @@ import TableRoutes from './routes/tableRoutes.js'
 import verifyToken from './middleware/verifyToken.js';
 import checkRole from './middleware/checkRole.js';
 import sessionRoutes from './routes/sessionRoutes.js'
+import logger from './config/logger.js';
 
 
 
@@ -34,6 +35,15 @@ app.use('/api' , sessionRoutes)
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{
     if(err){
+       // ----------- LOGGER ---------------
+    logger.error(`
+      STATUS: ${err.status || 500}
+      MESSAGE: ${err.message}
+      URL: ${req.originalUrl}
+      METHOD: ${req.method}
+      IP: ${req.ip}
+    `);
+    // -----------------------------------
       res.status(err.status || 500).json({
         messsage : err?.message || 'server error'
       })
