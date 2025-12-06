@@ -20,6 +20,10 @@ const tableSchema = new mongoose.Schema({
   capacity: {
     type: Number,
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const Table = mongoose.model("Table", tableSchema);

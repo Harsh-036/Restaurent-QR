@@ -5,6 +5,8 @@ import userRoutes from "./routes/userRoutes.js";
 import TableRoutes from './routes/tableRoutes.js'
 import verifyToken from './middleware/verifyToken.js';
 import checkRole from './middleware/checkRole.js';
+import sessionRoutes from './routes/sessionRoutes.js'
+
 
 
 
@@ -27,6 +29,16 @@ app.get('/', (req,res)=>{
 // routes
 app.use('/api',userRoutes)
 app.use('/api' ,TableRoutes )
+app.use('/api' , sessionRoutes)
+
+//here we placed the global error handleer => 
+  app.use((err,req,res,next)=>{
+    if(err){
+      res.status(err.status || 500).json({
+        messsage : err?.message || 'server error'
+      })
+    }
+  })
 
 
 app.listen(3000, ()=>{

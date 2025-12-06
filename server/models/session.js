@@ -30,6 +30,9 @@ const sessionSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+     expiresAt : {
+        type : Date
+    },
     lastActivity:{
         type: Date
     }
