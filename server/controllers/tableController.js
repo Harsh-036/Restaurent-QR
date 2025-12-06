@@ -50,7 +50,7 @@ export const getTableBySlug = async(req,res, next) => {
   try {
     //params //query params //req.body ;
     const {slug}  = req.params  ;
-    console.log(typeof slug)
+    // console.log(typeof slug)
     const filterObject = {qrSlug : slug , isActive : true} ;
     console.log(filterObject) ;
 
