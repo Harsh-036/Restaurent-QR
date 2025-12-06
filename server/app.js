@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import dbConnect from './config/database.js';
 import userRoutes from "./routes/userRoutes.js";
+import TableRoutes from './routes/tableRoutes.js'
 import verifyToken from './middleware/verifyToken.js';
 import checkRole from './middleware/checkRole.js';
 
@@ -25,6 +26,8 @@ app.get('/', (req,res)=>{
 
 // routes
 app.use('/api',userRoutes)
+app.use('/api' ,TableRoutes )
+
 
 app.listen(3000, ()=>{
     console.log('server is running on port: http://localhost:3000')

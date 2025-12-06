@@ -15,7 +15,6 @@ const Main = () => {
   return (
     <div>
       <h1>Main Page</h1>
-      {/* <p>{menuMessage}</p> */}
     </div>
   );
 };
