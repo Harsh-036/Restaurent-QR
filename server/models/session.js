@@ -34,7 +34,8 @@ const sessionSchema = new mongoose.Schema({
         type : Date
     },
     lastActivity:{
-        type: Date
+        type: Date,
+        default: Date
     }
 });
 

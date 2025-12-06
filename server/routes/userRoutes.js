@@ -1,10 +1,11 @@
-import express from "express";
-import { register, login, refreshToken } from "../controllers/userControllers.js";
+import express from 'express' ;
+// import { RotationGestureHandler } from 'react-native-gesture-handler';
+import verifyToken from '../middlewares/verifyToken';
+import checkRole from '../middlewares/checkRole';
 
-const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.post("/refresh-token", refreshToken);
+const router = express.Router() ;
 
-export default router;
+
+//get all user //token user login => verify token , admin
+router.get('/users', verifyToken , checkRole(['admin'], ))

@@ -1,6 +1,16 @@
-import { Link } from "react-router-dom";
+import { session } from "@/redux/guestSlice";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Welcome() {
+   const navigate = useNavigate();
+const dispatch = useDispatch()
+  const handleContinueAsGuest = () => {
+  dispatch(session({deviceId : 'dfkdfds' , qrSlug : "ac34a3448e32"}))
+    // localStorage.setItem('guestMode', 'true');
+    // navigate('/');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white">
 
@@ -42,12 +52,12 @@ export default function Welcome() {
             Sign Up
           </Link>
 
-          <Link
-            to="/"
+          <button
+            onClick={handleContinueAsGuest}
             className="block w-full py-3 border border-white/40 rounded-xl text-gray-200 hover:bg-white/10 transition font-medium shadow-md"
           >
             Continue as Guest
-          </Link>
+          </button>
 
         </div>
 
