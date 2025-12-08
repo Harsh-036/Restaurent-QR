@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
     default: 'customer'
   },
   isActive: {
-    type: Boolean
+    type: Boolean,
+    default: true
   },
   totalSpend: {
     type: Number

@@ -10,6 +10,8 @@ const { sessionToken } = useSelector((state) => state.guest);
 
   const handleContinueAsGuest = () => {
     dispatch(session({deviceId : 'dfkdfds' , qrSlug : "ac34a3448e32"}))
+    localStorage.setItem('userName', 'User');
+    localStorage.setItem('userRole', 'guest');
   };
 
   useEffect(() => {

@@ -82,6 +82,13 @@ const authSlice = createSlice({
         state.refreshTokenExpiry = action.payload.refreshTokenExpiry;
         localStorage.setItem('accessToken', action.payload.accessToken);
         localStorage.setItem('refreshToken', action.payload.refreshToken);
+        // Store user name and role in localStorage
+        localStorage.setItem('userName', action.payload.user.name);
+        localStorage.setItem('userRole', action.payload.user.role);
+        // Check if guest session token exists and remove it
+        if (localStorage.getItem('sessionToken')) {
+          localStorage.removeItem('sessionToken');
+        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

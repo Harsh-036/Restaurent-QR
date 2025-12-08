@@ -33,7 +33,8 @@ export const register = async (req, res) => {
             name,
             email,
             phone,
-            passwordHash: hashedPassword
+            passwordHash: hashedPassword,
+            isActive: true
         });
 
         await user.save();

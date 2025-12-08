@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Navbar from './navbar';
 
 const Main = () => {
   const accessToken = localStorage.getItem('accessToken');
@@ -22,7 +23,7 @@ const Main = () => {
 
   return (
     <div>
-      <h1>Main Page</h1>
+      <Navbar/>
     </div>
   );
 };
