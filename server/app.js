@@ -3,10 +3,11 @@ import cors from 'cors'
 import dbConnect from './config/database.js';
 import authRoutes from "./routes/authRoutes.js";
 import TableRoutes from './routes/tableRoutes.js'
-import verifyToken from './middleware/verifyToken.js';
+// import verifyToken from './middleware/verifyToken.js';
 import checkRole from './middleware/checkRole.js';
 import sessionRoutes from './routes/sessionRoutes.js'
 import logger from './config/logger.js';
+import verifyAuth from './middleware/verifyAuth.js';
 
 
 
@@ -19,7 +20,7 @@ app.use(express.json())
 // fn used for mongodb connection
 
 dbConnect()
-app.get('/menu', verifyToken, checkRole(['customer', 'admin']), (req, res) => {
+app.get('/menu', verifyAuth, checkRole(['customer', 'admin']), (req, res) => {
     res.send({ message: 'Menu is available for you' });
 });
 

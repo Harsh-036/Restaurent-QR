@@ -2,14 +2,22 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Main = () => {
-  console.log(localStorage.getItem('accessToken'));
+  const accessToken = localStorage.getItem('accessToken');
+  const sessionToken = localStorage.getItem('sessionToken');
+  const token = accessToken || sessionToken;
+
+  // console.log('Access Token:', accessToken);
+  // console.log('Session Token:', sessionToken);
+
   useEffect(() => {
-    axios.get('http://localhost:3000/menu', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    });
-  }, []);
+    if (token) {
+      axios.get('http://localhost:3000/menu', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+  }, [token]);
 
 
   return (

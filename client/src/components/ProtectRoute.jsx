@@ -3,13 +3,14 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectRoute = ({ children }) => {
   const accessToken = localStorage.getItem('accessToken');
+  const sessionToken = localStorage.getItem('sessionToken');
 
-  if (!accessToken) {
-    // Redirect to Home page (/login) if token is missing
+  if (!accessToken && !sessionToken) {
+    // Redirect to Home page (/login) if both tokens are missing
     return <Navigate to="/login" replace />;
   }
 
-  // If token exists, render the protected content
+  // If either token exists, render the protected content
   return children ? children : <Outlet />;
 };
 

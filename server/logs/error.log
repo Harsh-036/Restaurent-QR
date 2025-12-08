@@ -1,0 +1,42 @@
+2025-12-06 20:37:46 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-06 20:37:58 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-08 14:45:09 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of undefined (reading 'role')
+      URL: /menu
+      METHOD: GET
+      IP: ::1
+    
+2025-12-08 14:45:09 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of undefined (reading 'role')
+      URL: /menu
+      METHOD: GET
+      IP: ::1
+    
+2025-12-08 14:45:24 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of undefined (reading 'role')
+      URL: /menu
+      METHOD: GET
+      IP: ::1
+    
+2025-12-08 14:45:24 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of undefined (reading 'role')
+      URL: /menu
+      METHOD: GET
+      IP: ::1
+    

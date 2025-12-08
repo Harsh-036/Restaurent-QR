@@ -1,15 +1,22 @@
 import { session } from "@/redux/guestSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Welcome() {
    const navigate = useNavigate();
 const dispatch = useDispatch()
+const { sessionToken } = useSelector((state) => state.guest);
+
   const handleContinueAsGuest = () => {
-  dispatch(session({deviceId : 'dfkdfds' , qrSlug : "ac34a3448e32"}))
-    // localStorage.setItem('guestMode', 'true');
-    // navigate('/');
+    dispatch(session({deviceId : 'dfkdfds' , qrSlug : "ac34a3448e32"}))
   };
+
+  useEffect(() => {
+    if (sessionToken) {
+      navigate('/');
+    }
+  }, [sessionToken, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white">
