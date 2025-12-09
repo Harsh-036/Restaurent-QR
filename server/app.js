@@ -8,6 +8,8 @@ import checkRole from './middleware/checkRole.js';
 import sessionRoutes from './routes/sessionRoutes.js'
 import logger from './config/logger.js';
 import verifyAuth from './middleware/verifyAuth.js';
+import menuRoutes from './routes/menuRoute.js'
+import dotenv from 'dotenv';
 
 
 
@@ -32,6 +34,7 @@ app.get('/', (req,res)=>{
 app.use('/api',authRoutes)
 app.use('/api' ,TableRoutes )
 app.use('/api' , sessionRoutes)
+app.use('/api/' , menuRoutes)
 
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{

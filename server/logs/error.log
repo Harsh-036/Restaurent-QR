@@ -40,3 +40,59 @@
       METHOD: GET
       IP: ::1
     
+2025-12-09 16:16:28 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-09 16:16:34 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-09 16:16:38 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-09 16:16:40 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-09 16:16:40 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-09 16:17:30 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-09 16:19:09 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-09 16:22:15 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
