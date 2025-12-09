@@ -1,50 +1,51 @@
 import { session } from "@/redux/guestSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function Welcome() {
-   const navigate = useNavigate();
-const dispatch = useDispatch()
-const { sessionToken } = useSelector((state) => state.guest);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { sessionToken } = useSelector((state) => state.guest);
+
+  // 🔥 Get dynamic qrSlug from URL — /?qr=ac34a3448e32
+  // http://localhost:5173/welcome?qr=ac34a3448e32
+  const [searchParams] = useSearchParams();
+  const qrSlug = searchParams.get("qr");
 
   const handleContinueAsGuest = () => {
-    dispatch(session({deviceId : 'dfkdfds' , qrSlug : "ac34a3448e32"}))
-    localStorage.setItem('userName', 'User');
-    localStorage.setItem('userRole', 'guest');
+    dispatch(session({ deviceId: "dfkdfds", qrSlug }));
+
+    localStorage.setItem("userName", "User");
+    localStorage.setItem("userRole", "guest");
   };
 
   useEffect(() => {
     if (sessionToken) {
-      navigate('/');
+      navigate("/");
     }
   }, [sessionToken, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white">
 
-      {/* CARD */}
       <div className="bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-10 px-14 text-center max-w-lg border border-white/20">
 
-        {/* Logo */}
         <img 
           src="/vite.svg" 
           alt="Restaurant Logo" 
           className="w-24 h-24 mx-auto mb-6 bg-white/10 p-4 rounded-full shadow-xl backdrop-blur-md"
         />
 
-        {/* Heading */}
         <h1 className="text-4xl font-extrabold leading-snug mb-3 drop-shadow-lg">
           Restaurant QR System
         </h1>
 
-        {/* Subtext */}
         <p className="text-gray-300 text-sm leading-relaxed mb-10">
           A modern digital menu and ordering solution.  
           Browse menu, scan QR, order fast — enjoy a seamless dining experience.
         </p>
 
-        {/* Buttons */}
         <div className="space-y-4">
 
           <Link
@@ -67,7 +68,6 @@ const { sessionToken } = useSelector((state) => state.guest);
           >
             Continue as Guest
           </button>
-
         </div>
 
       </div>
