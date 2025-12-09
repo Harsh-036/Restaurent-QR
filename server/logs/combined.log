@@ -117,3 +117,10 @@
       METHOD: POST
       IP: ::1
     
+2025-12-09 17:55:19 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
