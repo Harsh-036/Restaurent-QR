@@ -111,3 +111,56 @@ export const refreshToken = async (req, res) => {
         res.status(500).json({ message: "Server error", error });
     }
 };
+
+// UPDATE USER
+export const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, role, password } = req.body;
+        const authenticatedUser = req.user;
+
+        // Check if user is updating their own profile or is admin
+        if (authenticatedUser._id.toString() !== id && authenticatedUser.role !== 'admin') {
+            return res.status(403).json({ message: "Forbidden: You can only update your own profile" });
+        }
+
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        // Update fields
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (role && authenticatedUser.role === 'admin') user.role = role; // Only admin can change role
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            user.passwordHash = hashedPassword;
+        }
+
+        await user.save();
+        res.json({ message: "User updated successfully", user });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
+
+// DELETE USER
+export const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const authenticatedUser = req.user;
+
+        // Check if user is deleting their own account or is admin
+        if (authenticatedUser._id.toString() !== id && authenticatedUser.role !== 'admin') {
+            return res.status(403).json({ message: "Forbidden: You can only delete your own account" });
+        }
+
+        const user = await User.findByIdAndDelete(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        res.json({ message: "User deleted successfully" });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
