@@ -14,6 +14,9 @@ export default function UpdateProfile() {
   const [phone, setPhone] = useState(localStorage.getItem("userPhone") || "");
   const [role] = useState(localStorage.getItem("userRole") || "");
   const [password, setPassword] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -76,21 +79,24 @@ export default function UpdateProfile() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center 
-      bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] px-4 py-8">
-
-      <div className="bg-white/10 backdrop-blur-2xl border border-white/20 
-        rounded-3xl shadow-2xl p-10 w-full max-w-lg text-white">
-
+    <div
+      className="min-h-screen flex items-center justify-center 
+      bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] px-4 py-8"
+    >
+      <div
+        className="bg-white/10 backdrop-blur-2xl border border-white/20 
+        rounded-3xl shadow-2xl p-10 w-full max-w-lg text-white"
+      >
         <h1 className="text-4xl font-bold text-center mb-6 drop-shadow-lg">
           Update Profile
         </h1>
 
         <form className="space-y-6" onSubmit={handleUpdate}>
-          
           {/* NAME */}
           <div>
-            <label className="block text-gray-200 mb-2 font-medium">Full Name</label>
+            <label className="block text-gray-200 mb-2 font-medium">
+              Full Name
+            </label>
             <input
               type="text"
               value={name}
@@ -105,33 +111,53 @@ export default function UpdateProfile() {
 
           {/* EMAIL */}
           <div>
-            <label className="block text-gray-200 mb-2 font-medium">Email</label>
+            <label className="block text-gray-200 mb-2 font-medium">
+              Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setEmailTouched(true)}
               className={`w-full p-3 rounded-xl bg-white/20 backdrop-blur-md 
-                border ${isEmailValid ? "border-green-400" : "border-red-400"} 
-                text-white placeholder-gray-300 transition`}
+      border ${
+        isEmailValid || !emailTouched ? "border-white/20" : "border-red-400"
+      } 
+      text-white placeholder-gray-300 transition`}
               placeholder="Enter your email"
               required
             />
+            {emailTouched && !isEmailValid && (
+              <p className="text-red-400 mt-1 text-sm">
+                Please enter a valid email address.
+              </p>
+            )}
           </div>
 
           {/* PHONE */}
           <div>
-            <label className="block text-gray-200 mb-2 font-medium">Phone Number</label>
+            <label className="block text-gray-200 mb-2 font-medium">
+              Phone Number
+            </label>
             <input
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              onBlur={() => setPhoneTouched(true)}
               maxLength={10}
               className={`w-full p-3 rounded-xl bg-white/20 backdrop-blur-md 
-                border ${isPhoneValid ? "border-green-400" : "border-red-400"}
-                text-white placeholder-gray-300 transition`}
+      border ${
+        isPhoneValid || !phoneTouched ? "border-white/20" : "border-red-400"
+      } 
+      text-white placeholder-gray-300 transition`}
               placeholder="Enter 10-digit phone number"
               required
             />
+            {phoneTouched && !isPhoneValid && (
+              <p className="text-red-400 mt-1 text-sm">
+                Phone number must be 10 digits.
+              </p>
+            )}
           </div>
 
           {/* ROLE */}
@@ -148,18 +174,24 @@ export default function UpdateProfile() {
 
           {/* PASSWORD */}
           <div>
-            <label className="block text-gray-200 mb-2 font-medium">New Password</label>
+            <label className="block text-gray-200 mb-2 font-medium">
+              New Password
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => setPasswordTouched(true)}
                 className={`w-full p-3 rounded-xl bg-white/20 backdrop-blur-md 
-                  border ${password.length === 0 || isPasswordValid ? "border-green-400" : "border-red-400"} 
-                  text-white placeholder-gray-300 transition`}
+        border ${
+          password.length === 0 || isPasswordValid
+            ? "border-green-400"
+            : "border-red-400"
+        } 
+        text-white placeholder-gray-300 transition`}
                 placeholder="Enter strong password"
               />
-
               <span
                 className="absolute right-4 top-3 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
@@ -167,6 +199,12 @@ export default function UpdateProfile() {
                 {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
               </span>
             </div>
+            {passwordTouched && !isPasswordValid && (
+              <p className="text-red-400 mt-1 text-sm">
+                Password must be at least 6 characters, include uppercase,
+                lowercase, number & special character.
+              </p>
+            )}
           </div>
 
           {/* SAVE CHANGES BUTTON */}
@@ -174,7 +212,11 @@ export default function UpdateProfile() {
             type="submit"
             disabled={!isFormValid}
             className={`w-full py-3 rounded-xl font-semibold shadow-lg transition
-              ${isFormValid ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-500 cursor-not-allowed"}`}
+              ${
+                isFormValid
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-gray-500 cursor-not-allowed"
+              }`}
           >
             Save Changes
           </button>
@@ -188,7 +230,6 @@ export default function UpdateProfile() {
         >
           <Trash2 size={20} /> Delete Account
         </button>
-
       </div>
     </div>
   );
