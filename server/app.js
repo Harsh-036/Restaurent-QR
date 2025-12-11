@@ -10,6 +10,7 @@ import logger from './config/logger.js';
 import verifyAuth from './middleware/verifyAuth.js';
 import menuRoutes from './routes/menuRoute.js'
 import dotenv from 'dotenv';
+import cartRoutes from './routes/cartRoutes.js'
 
 
 
@@ -19,6 +20,7 @@ app.use(cors({
     origin: "http://localhost:5173"
 }))
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 // fn used for mongodb connection
 
 dbConnect()
@@ -34,7 +36,8 @@ app.get('/', (req,res)=>{
 app.use('/api',authRoutes)
 app.use('/api' ,TableRoutes )
 app.use('/api' , sessionRoutes)
-app.use('/api/' , menuRoutes)
+app.use('/api' , menuRoutes)
+app.use('/api' , cartRoutes)
 
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{
