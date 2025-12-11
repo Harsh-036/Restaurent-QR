@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
 
 const Navbar = () => {
   const userName = localStorage.getItem("userName") || "Guest";
@@ -8,6 +10,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -26,7 +29,9 @@ const Navbar = () => {
     localStorage.removeItem("userRole");
     localStorage.removeItem("sessionToken");
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
 
+    dispatch(logout());
     navigate("/login");
   };
 

@@ -11,13 +11,14 @@ const Home = () => {
     password: "",
     phoneNumber: "",
   });
+  const [loginAlertShown, setLoginAlertShown] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, isAuthenticated, refreshTokenExpiry } = useSelector((state) => state.auth);
 
   React.useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && refreshTokenExpiry) {
       const message = isSignup ? "Signup successful!" : `Login successful! ${refreshTokenExpiry}`;
       alert(message);
       navigate("/");
