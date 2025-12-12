@@ -30,6 +30,8 @@ const Navbar = () => {
     localStorage.removeItem("sessionToken");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userPhone");
 
     dispatch(logout());
     navigate("/login");
