@@ -11,7 +11,7 @@ const menuSchema = new mongoose.Schema({
     type : String
  }, //ui in binary => parse => cloudinary save
  isAvailable : {
-   type : String  ,
+   type : Boolean  ,
    default : true
  },  //ui
  price : {

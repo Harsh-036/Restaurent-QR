@@ -14,7 +14,7 @@ import cartRoutes from './routes/cartRoutes.js'
 
 
 
-
+dotenv.config()
 const app = express();
 app.use(cors({
     origin: "http://localhost:5173"
