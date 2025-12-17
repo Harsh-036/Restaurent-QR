@@ -14,12 +14,25 @@ export const createTable = async (req, res) => {
 
     //networ api setup
     console.log(os.networkInterfaces()["Wi-Fi"]);
-    const data = os.networkInterfaces()["Wi-Fi"];
-    let ipAddress = null;
-    for (const el of data) {
-      if (el.family === "IPv4") ipAddress = el.address;
+const networks = os.networkInterfaces();
+let ipAddress = null;
+
+for (const name of Object.keys(networks)) {
+  for (const el of networks[name]) {
+    if (el.family === "IPv4" && !el.internal) {
+      ipAddress = el.address;
+      break;
     }
-    console.log(ipAddress);
+  }
+  if (ipAddress) break;
+}
+
+if (!ipAddress) {
+  throw new Error("No IPv4 address found");
+}
+
+console.log("Using IP:", ipAddress);
+
 
     //generate qr code url
     const qrCodeURL = `http://${ipAddress}:5173/scan-qr?qr=${qrSlug}`;
