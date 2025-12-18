@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../redux/authSlice";
+import { ShoppingCart } from "lucide-react";
 
 const Navbar = () => {
   const userName = localStorage.getItem("userName") || "Guest";
@@ -71,6 +72,16 @@ const Navbar = () => {
         <Link to="/orders" className="hover:text-blue-400 transition">
           Orders
         </Link>
+        <button
+          className="relative p-2 text-gray-300 hover:text-white transition-colors"
+          aria-label="Shopping cart"
+          onClick={() => navigate("/cart")}
+        >
+          <ShoppingCart className="w-6 h-6" />
+          <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+            0
+          </span>
+        </button>
       </div>
 
       {/* RIGHT - USER BOX with DROPDOWN */}
