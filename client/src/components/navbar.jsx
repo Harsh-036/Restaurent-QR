@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/authSlice";
 import { ShoppingCart } from "lucide-react";
 
@@ -12,6 +12,12 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const { cart } = useSelector((state) => state.cart);
+
+
+  const cartItems = cart?.items || [];
+
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -79,7 +85,7 @@ const Navbar = () => {
         >
           <ShoppingCart className="w-6 h-6" />
           <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-            0
+            {cartItems.length} 
           </span>
         </button>
       </div>

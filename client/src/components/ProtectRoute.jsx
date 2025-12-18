@@ -58,7 +58,7 @@ const ProtectRoute = ({ children }) => {
 
   return (
     <div>
-      {/* <Navbar /> */}
+      <Navbar />
       {children}
     </div>
   );

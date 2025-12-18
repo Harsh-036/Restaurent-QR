@@ -84,8 +84,20 @@ export const addToCart = async (req, res) => {
 // Remove item from cart
 export const removeItemCart = async (req, res) => {
   try {
-    const { userId, menuItemId } = req.body;
-    let cart = await Cart.findOne({ userId });
+    const { menuItemId } = req.body;
+
+    let cart;
+
+    // 1️⃣ USER CART
+    if (req.authType === 'user') {
+      cart = await Cart.findOne({ userId: req.user._id });
+    }
+
+    // 2️⃣ GUEST CART
+    if (req.authType === 'guest') {
+      cart = await Cart.findOne({ sessionId: req.session._id });
+    }
+
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
     cart.items = cart.items.filter(
@@ -94,7 +106,8 @@ export const removeItemCart = async (req, res) => {
 
     await updateTotalPrice(cart);
     await cart.save();
-    res.status(200).json({ message: 'Item removed from cart', cart });
+    await cart.populate('items.menuItemId');
+    res.status(200).json({ message: 'Item removed from cart', cart, cartType: req.authType });
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -103,8 +116,20 @@ export const removeItemCart = async (req, res) => {
 // Increase item quantity
 export const increaseItemQuantity = async (req, res) => {
   try {
-    const { userId, menuItemId } = req.body;
-    let cart = await Cart.findOne({ userId });
+    const { menuItemId } = req.body;
+
+    let cart;
+
+    // 1️⃣ USER CART
+    if (req.authType === 'user') {
+      cart = await Cart.findOne({ userId: req.user._id });
+    }
+
+    // 2️⃣ GUEST CART
+    if (req.authType === 'guest') {
+      cart = await Cart.findOne({ sessionId: req.session._id });
+    }
+
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
     const item = cart.items.find((i) => i.menuItemId.toString() === menuItemId);
@@ -114,7 +139,8 @@ export const increaseItemQuantity = async (req, res) => {
 
     await updateTotalPrice(cart);
     await cart.save();
-    res.status(200).json({ message: 'Item quantity increased', cart });
+    const populatedCart = await Cart.findById(cart._id).populate('items.menuItemId');
+    res.status(200).json({ message: 'Item quantity increased', cart: populatedCart, cartType: req.authType });
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
@@ -123,8 +149,20 @@ export const increaseItemQuantity = async (req, res) => {
 // Decrease item quantity
 export const decreaseItemQuantity = async (req, res) => {
   try {
-    const { userId, menuItemId } = req.body;
-    let cart = await Cart.findOne({ userId });
+    const { menuItemId } = req.body;
+
+    let cart;
+
+    // 1️⃣ USER CART
+    if (req.authType === 'user') {
+      cart = await Cart.findOne({ userId: req.user._id });
+    }
+
+    // 2️⃣ GUEST CART
+    if (req.authType === 'guest') {
+      cart = await Cart.findOne({ sessionId: req.session._id });
+    }
+
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
     const item = cart.items.find((i) => i.menuItemId.toString() === menuItemId);
@@ -139,9 +177,38 @@ export const decreaseItemQuantity = async (req, res) => {
 
     await updateTotalPrice(cart);
     await cart.save();
-    res.status(200).json({ message: 'Item quantity decreased', cart });
+    await cart.populate('items.menuItemId');
+    res.status(200).json({ message: 'Item quantity decreased', cart, cartType: req.authType });
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
+// Get cart for authenticated user
+export const getCart = async (req, res) => {
+  try {
+    let cart;
+
+    // 1️⃣ USER CART
+    if (req.authType === 'user') {
+      cart = await Cart.findOne({ userId: req.user._id }).populate('items.menuItemId');
+    }
+
+    // 2️⃣ GUEST CART
+    if (req.authType === 'guest') {
+      cart = await Cart.findOne({ sessionId: req.session._id }).populate('items.menuItemId');
+    }
+
+    if (!cart) {
+      return res.status(200).json({ cart: { items: [], totalCartPrice: 0 } });
+    }
+
+    res.status(200).json({ cart });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server error while fetching cart',
+      error: error.message,
+    });
   }
 };
 

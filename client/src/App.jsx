@@ -6,14 +6,13 @@ import Main from "./components/Main";
 import ProtectRoute from "./components/ProtectRoute";
 import Welcome from "./components/Welcome";
 import UpdateProfile from "./components/pages/updateProfile";
-import Navbar from "./components/navbar";
 import Cart from "./components/Cart";
 
 const App = () => {
   return (
     <Router>
       <div>
-        <Navbar/>
+        {/* <Navbar/> */}
         <Routes>
           {/*  protected main page */}
           <Route

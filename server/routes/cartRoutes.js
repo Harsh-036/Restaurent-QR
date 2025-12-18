@@ -4,7 +4,8 @@ import {
   removeItemCart,
   increaseItemQuantity,
   decreaseItemQuantity,
-  clearCart
+  clearCart,
+  getCart
 } from '../controllers/cartController.js';
 import verifyAuth from '../middleware/verifyAuth.js'
 
@@ -13,14 +14,17 @@ const router = express.Router();
 // Add item to cart
 router.post('/addtocart', verifyAuth, addToCart);
 
+// Get cart for authenticated user
+router.get('/getcart', verifyAuth, getCart);
+
 // Remove specific item from cart
-router.post('/removeitem', removeItemCart);
+router.post('/removeitem', verifyAuth, removeItemCart);
 
 // Increase item quantity
-router.post('/increaseitem', increaseItemQuantity);
+router.post('/increaseitem', verifyAuth, increaseItemQuantity);
 
 // Decrease item quantity
-router.post('/decreaseitem', decreaseItemQuantity);
+router.post('/decreaseitem', verifyAuth, decreaseItemQuantity);
 
 // Clear entire cart
 router.post('/clearcart', clearCart);

@@ -1,99 +1,65 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
-
-const staticCartData = {
-  userId: "507f1f77bcf86cd799439011",
-  items: [
-    {
-      menuItemId: "507f1f77bcf86cd799439012",
-      quantity: 2,
-      menuItem: {
-        _id: "507f1f77bcf86cd799439012",
-        name: "Paneer Tikka",
-        description:
-          "Marinated cottage cheese cubes grilled to perfection with aromatic spices",
-        image:
-          "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&fit=crop",
-        price: 280,
-        category: "Main Course",
-        isAvailable: true,
-      },
-    },
-    {
-      menuItemId: "507f1f77bcf86cd799439013",
-      quantity: 1,
-      menuItem: {
-        _id: "507f1f77bcf86cd799439013",
-        name: "Dal Makhani",
-        description:
-          "Slow-cooked black lentils with butter and cream for a rich taste",
-        image:
-          "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=500&fit=crop",
-        price: 220,
-        category: "Main Course",
-        isAvailable: true,
-      },
-    },
-    {
-      menuItemId: "507f1f77bcf86cd799439014",
-      quantity: 3,
-      menuItem: {
-        _id: "507f1f77bcf86cd799439014",
-        name: "Garlic Naan",
-        description:
-          "Soft tandoor-baked naan brushed with garlic butter",
-        image:
-          "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&fit=crop",
-        price: 60,
-        category: "Breads",
-        isAvailable: true,
-      },
-    },
-    {
-      menuItemId: "507f1f77bcf86cd799439015",
-      quantity: 1,
-      menuItem: {
-        _id: "507f1f77bcf86cd799439015",
-        name: "Mango Lassi",
-        description:
-          "Chilled yogurt drink blended with fresh mango pulp",
-        image:
-          "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&fit=crop",
-        price: 120,
-        category: "Beverages",
-        isAvailable: true,
-      },
-    },
-  ],
-};
+import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem } from "../redux/cartSlice";
 
 const Cart = () => {
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState(staticCartData.items);
+  const dispatch = useDispatch();
+  const { cart, loading, error } = useSelector((state) => state.cart);
+
+  useEffect(() => {
+    dispatch(getCart());
+  }, [dispatch]);
+
+  const cartItems = cart?.items || [];
 
   const totalPrice = useMemo(
     () =>
       cartItems.reduce(
-        (sum, item) => sum + item.quantity * item.menuItem.price,
+        (sum, item) => sum + item.quantity * item.menuItemId.price,
         0
       ),
     [cartItems]
   );
 
-  const updateQuantity = (id, change) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.menuItemId === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    );
-  };
+  // TODO: Implement updateQuantity and removeItem with server calls
 
-  const removeItem = (id) => {
-    setCartItems((items) => items.filter((i) => i.menuItemId !== id));
-  };
+  if (loading) {
+    return (
+      <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
+        <div className="w-24 h-24 rounded-full bg-card border border-border flex items-center justify-center mb-6">
+          <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+        </div>
+        <h2 className="text-2xl font-bold text-foreground mb-2">
+          Loading your cart...
+        </h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
+        <div className="w-24 h-24 rounded-full bg-card border border-border flex items-center justify-center mb-6">
+          <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+        </div>
+        <h2 className="text-2xl font-bold text-foreground mb-2">
+          Error loading cart
+        </h2>
+        <p className="text-muted-foreground mb-6">
+          {error}
+        </p>
+        <button
+          onClick={() => dispatch(getCart())}
+          className="px-8 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   if (!cartItems.length) {
     return (
@@ -137,8 +103,8 @@ const Cart = () => {
             >
               <div className="flex flex-col sm:flex-row">
                 <img
-                  src={item.menuItem.image}
-                  alt={item.menuItem.name}
+                  src={item.menuItemId.image}
+                  alt={item.menuItemId.name}
                   className="w-full sm:w-44 h-44 object-cover"
                 />
 
@@ -146,19 +112,19 @@ const Cart = () => {
                   <div>
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-lg font-semibold text-foreground">
-                        {item.menuItem.name}
+                        {item.menuItemId.name}
                       </h3>
                       <span className="text-foreground font-bold">
-                        ₹{item.menuItem.price}
+                        ₹{item.menuItemId.price}
                       </span>
                     </div>
 
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {item.menuItem.description}
+                      {item.menuItemId.description}
                     </p>
 
                     <span className="inline-block text-[11px] uppercase tracking-wider text-muted-foreground border border-border px-3 py-1 rounded-full">
-                      {item.menuItem.category}
+                      {item.menuItemId.category}
                     </span>
                   </div>
 
@@ -168,7 +134,7 @@ const Cart = () => {
                       <div className="flex items-center bg-secondary border border-border rounded-lg">
                         <button
                           onClick={() =>
-                            updateQuantity(item.menuItemId, -1)
+                            dispatch(decreaseItemQuantity({ menuItemId: item.menuItemId._id }))
                           }
                           className="p-2 hover:bg-secondary/80 rounded-l-lg"
                         >
@@ -179,7 +145,7 @@ const Cart = () => {
                         </span>
                         <button
                           onClick={() =>
-                            updateQuantity(item.menuItemId, 1)
+                            dispatch(increaseItemQuantity({ menuItemId: item.menuItemId._id }))
                           }
                           className="p-2 hover:bg-secondary/80 rounded-r-lg"
                         >
@@ -190,14 +156,16 @@ const Cart = () => {
                       <div>
                         <p className="text-xs text-muted-foreground">Subtotal</p>
                         <p className="text-foreground font-semibold">
-                          ₹{item.quantity * item.menuItem.price}
+                          ₹{item.quantity * item.menuItemId.price}
                         </p>
                       </div>
                     </div>
 
                     <button
-                      onClick={() => removeItem(item.menuItemId)}
-                      className="p-2 text-destructive hover:bg-destructive/10 rounded-lg"
+                      onClick={() =>
+                        dispatch(removeItem({ menuItemId: item.menuItemId._id }))
+                      }
+                      className="p-2 text-destructive rounded-lg hover:bg-destructive/10 transition"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
