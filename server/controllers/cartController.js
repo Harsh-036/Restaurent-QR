@@ -16,31 +16,70 @@ const updateTotalPrice = async (cart) => {
 // Add item to cart
 export const addToCart = async (req, res) => {
   try {
-    const { menuItemId, userId, quantity = 1 } = req.body;
+    const { menuItemId, quantity = 1 } = req.body;
 
-    let cart = await Cart.findOne({ userId });
-    if (!cart) cart = new Cart({ userId, items: [], totalCartPrice: 0 });
+    let cart;
 
-    let menu = await Menu.findById(menuItemId);
-    if (!menu) return res.status(404).json({ message: 'Menu item not found' });
+    // 1️⃣ USER CART
+    if (req.authType === 'user') {
+      cart = await Cart.findOne({ userId: req.user._id });
 
-    const existingMenuItem = cart.items.find(
+      if (!cart) {
+        cart = new Cart({
+          userId: req.user._id,
+          items: [],
+          totalCartPrice: 0,
+        });
+      }
+    }
+
+    // 2️⃣ GUEST CART
+    if (req.authType === 'guest') {
+      cart = await Cart.findOne({ sessionId: req.session._id });
+
+      if (!cart) {
+        cart = new Cart({
+          sessionId: req.session._id,
+          items: [],
+          totalCartPrice: 0,
+        });
+      }
+    }
+
+    // 3️⃣ Menu validation
+    const menu = await Menu.findById(menuItemId);
+    if (!menu) {
+      return res.status(404).json({ message: 'Menu item not found' });
+    }
+
+    // 4️⃣ Add / update item
+    const existingItem = cart.items.find(
       (item) => item.menuItemId.toString() === menuItemId
     );
 
-    if (!existingMenuItem) {
-      cart.items.push({ menuItemId, quantity });
+    if (existingItem) {
+      existingItem.quantity += quantity;
     } else {
-      existingMenuItem.quantity += quantity;
+      cart.items.push({ menuItemId, quantity });
     }
 
+    // 5️⃣ Recalculate price & save
     await updateTotalPrice(cart);
     await cart.save();
-    res.status(201).json({ message: 'Items added to cart', cart });
+
+    res.status(201).json({
+      message: 'Item added to cart successfully',
+      cart,
+      cartType: req.authType,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    res.status(500).json({
+      message: 'Server error while adding to cart',
+      error: error.message,
+    });
   }
 };
+
 
 // Remove item from cart
 export const removeItemCart = async (req, res) => {

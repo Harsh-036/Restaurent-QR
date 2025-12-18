@@ -6,11 +6,12 @@ import {
   decreaseItemQuantity,
   clearCart
 } from '../controllers/cartController.js';
+import verifyAuth from '../middleware/verifyAuth.js'
 
 const router = express.Router();
 
 // Add item to cart
-router.post('/addtocart', addToCart);
+router.post('/addtocart', verifyAuth, addToCart);
 
 // Remove specific item from cart
 router.post('/removeitem', removeItemCart);

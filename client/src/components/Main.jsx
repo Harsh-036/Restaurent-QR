@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMenu } from "../redux/menuSlice";
+import { addToCart } from "../redux/cartSlice";
 import Hero from "../components/Hero";
 // import Footer from "./Footer";
 
 const Main = () => {
   const dispatch = useDispatch();
-const { items: menuItems = [], loading, error } = useSelector((state) => state.menu);
+  const { items: menuItems = [], loading, error } = useSelector((state) => state.menu);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchMenu());
@@ -101,7 +103,10 @@ const categories = Array.isArray(menuItems)
                     {item.description}
                   </p>
 
-                  <button className="w-full mt-3 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition">
+                  <button
+                    onClick={() => dispatch(addToCart({ menuItemId: item._id, quantity: 1 }))}
+                    className="w-full mt-3 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition"
+                  >
                     Add to Cart
                   </button>
                 </div>
