@@ -47,9 +47,9 @@ const Navbar = () => {
   return (
     <nav
       className="
-      flex justify-between items-center px-8 py-4 
-      bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35]
-      text-white shadow-xl border-b border-white/20
+      fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-4
+      bg-gradient-to-br from-[#0e1a35]/80 via-[#162544]/80 to-[#0e1a35]/80
+      text-white shadow-xl border-b border-white/20 backdrop-blur-md
     "
     >
       {/* LEFT - LOGO */}

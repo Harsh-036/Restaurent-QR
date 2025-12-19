@@ -2,16 +2,14 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
-import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem } from "../redux/cartSlice";
+import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem, increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic } from "../redux/cartSlice";
 
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { cart, loading, error } = useSelector((state) => state.cart);
 
-  useEffect(() => {
-    dispatch(getCart());
-  }, [dispatch]);
+
 
   const cartItems = cart?.items || [];
 
@@ -26,13 +24,18 @@ const Cart = () => {
 
   // TODO: Implement updateQuantity and removeItem with server calls
 
+  // Fetch cart data on component mount
+  useEffect(() => {
+    dispatch(getCart());
+  }, [dispatch]);
+
   if (loading) {
     return (
       <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
-        <div className="w-24 h-24 rounded-full bg-card border border-border flex items-center justify-center mb-6">
-          <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+        <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-6">
+          <ShoppingBag className="w-12 h-12 text-gray-300" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">
+        <h2 className="text-2xl font-bold text-white mb-2">
           Loading your cart...
         </h2>
       </div>
@@ -42,18 +45,18 @@ const Cart = () => {
   if (error) {
     return (
       <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
-        <div className="w-24 h-24 rounded-full bg-card border border-border flex items-center justify-center mb-6">
-          <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+        <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-6">
+          <ShoppingBag className="w-12 h-12 text-gray-300" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">
+        <h2 className="text-2xl font-bold text-white mb-2">
           Error loading cart
         </h2>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-gray-300 mb-6">
           {error}
         </p>
         <button
           onClick={() => dispatch(getCart())}
-          className="px-8 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition"
+          className="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
         >
           Retry
         </button>
@@ -63,19 +66,19 @@ const Cart = () => {
 
   if (!cartItems.length) {
     return (
-      <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
-        <div className="w-24 h-24 rounded-full bg-card border border-border flex items-center justify-center mb-6">
-          <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+      <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] flex flex-col items-center justify-center text-center">
+        <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-6">
+          <ShoppingBag className="w-12 h-12 text-gray-300" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">
+        <h2 className="text-2xl font-bold text-white mb-2">
           Your cart feels lonely 😔
         </h2>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-gray-300 mb-6">
           Add some delicious food to continue
         </p>
         <button
           onClick={() => navigate("/")}
-          className="px-8 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition"
+          className="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
         >
           Explore Menu
         </button>
@@ -84,11 +87,12 @@ const Cart = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10 space-y-10">
+    <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] pt-16">
+      <div className="max-w-7xl mx-auto px-4 py-10 space-y-10">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Your Cart</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-3xl font-bold text-white">Your Cart</h1>
+        <p className="text-gray-300 mt-1">
           {cartItems.length} item(s) selected
         </p>
       </div>
@@ -98,33 +102,33 @@ const Cart = () => {
         <div className="lg:col-span-2 space-y-5">
           {cartItems.map((item) => (
             <div
-              key={item.menuItemId}
-              className="bg-card border border-border rounded-xl overflow-hidden hover:border-primary transition"
+              key={item.menuItemId._id || item._id}
+              className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl overflow-hidden hover:border-blue-500 transition"
             >
               <div className="flex flex-col sm:flex-row">
                 <img
-                  src={item.menuItemId.image}
-                  alt={item.menuItemId.name}
+                  src={item.menuItemId?.image || '/placeholder-image.jpg'}
+                  alt={item.menuItemId?.name || 'Menu Item'}
                   className="w-full sm:w-44 h-44 object-cover"
                 />
 
                 <div className="flex-1 p-5 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-foreground">
-                        {item.menuItemId.name}
+                      <h3 className="text-lg font-semibold text-white">
+                        {item.menuItemId?.name || 'Unknown Item'}
                       </h3>
-                      <span className="text-foreground font-bold">
-                        ₹{item.menuItemId.price}
+                      <span className="text-white font-bold">
+                        ₹{item.menuItemId?.price || 0}
                       </span>
                     </div>
 
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {item.menuItemId.description}
+                    <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+                      {item.menuItemId?.description || 'No description available'}
                     </p>
 
-                    <span className="inline-block text-[11px] uppercase tracking-wider text-muted-foreground border border-border px-3 py-1 rounded-full">
-                      {item.menuItemId.category}
+                    <span className="inline-block text-[11px] uppercase tracking-wider text-gray-300 border border-white/20 px-3 py-1 rounded-full">
+                      {item.menuItemId?.category || 'N/A'}
                     </span>
                   </div>
 
@@ -144,9 +148,10 @@ const Cart = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() =>
-                            dispatch(increaseItemQuantity({ menuItemId: item.menuItemId._id }))
-                          }
+                          onClick={() => {
+                            dispatch(increaseQuantityOptimistic({ menuItemId: item.menuItemId._id }));
+                            dispatch(increaseItemQuantity({ menuItemId: item.menuItemId._id }));
+                          }}
                           className="p-2 hover:bg-secondary/80 rounded-r-lg"
                         >
                           <Plus className="w-4 h-4 text-secondary-foreground" />
@@ -155,16 +160,17 @@ const Cart = () => {
 
                       <div>
                         <p className="text-xs text-muted-foreground">Subtotal</p>
-                        <p className="text-foreground font-semibold">
-                          ₹{item.quantity * item.menuItemId.price}
+                        <p className="text-white font-semibold">
+                          ₹{item.quantity * (item.menuItemId?.price || 0)}
                         </p>
                       </div>
                     </div>
 
                     <button
-                      onClick={() =>
-                        dispatch(removeItem({ menuItemId: item.menuItemId._id }))
-                      }
+                      onClick={() => {
+                        dispatch(removeItemOptimistic({ menuItemId: item.menuItemId._id }));
+                        dispatch(removeItem({ menuItemId: item.menuItemId._id }));
+                      }}
                       className="p-2 text-destructive rounded-lg hover:bg-destructive/10 transition"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -177,12 +183,12 @@ const Cart = () => {
         </div>
 
         {/* Summary */}
-        <div className="bg-card border border-border rounded-xl p-6 h-fit sticky top-24">
-          <h2 className="text-xl font-semibold text-foreground mb-6">
+        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-6 h-fit sticky top-24">
+          <h2 className="text-xl font-semibold text-white mb-6">
             Order Summary
           </h2>
 
-          <div className="space-y-4 text-muted-foreground">
+          <div className="space-y-4 text-gray-300">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>₹{totalPrice}</span>
@@ -191,7 +197,7 @@ const Cart = () => {
               <span>GST (18%)</span>
               <span>₹{Math.round(totalPrice * 0.18)}</span>
             </div>
-            <div className="border-t border-border pt-4 flex justify-between text-foreground font-semibold">
+            <div className="border-t border-white/20 pt-4 flex justify-between text-white font-semibold">
               <span>Total</span>
               <span>
                 ₹{totalPrice + Math.round(totalPrice * 0.18)}
@@ -199,17 +205,18 @@ const Cart = () => {
             </div>
           </div>
 
-          <button className="w-full mt-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition">
+          <button className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">
             Proceed to Checkout
           </button>
 
           <button
             onClick={() => navigate("/")}
-            className="w-full mt-3 py-3 border border-border text-foreground rounded-xl hover:bg-card/80 transition"
+            className="w-full mt-3 py-3 border border-white/20 text-white rounded-xl hover:bg-white/10 transition"
           >
             Continue Shopping
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

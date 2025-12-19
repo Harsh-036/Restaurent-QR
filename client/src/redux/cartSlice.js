@@ -155,7 +155,29 @@ const cartSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    increaseQuantityOptimistic: (state, action) => {
+      if (state.cart) {
+        const item = state.cart.items.find(item => item.menuItemId._id === action.payload.menuItemId);
+        if (item) {
+          item.quantity += 1;
+        }
+      }
+    },
+    decreaseQuantityOptimistic: (state, action) => {
+      if (state.cart) {
+        const item = state.cart.items.find(item => item.menuItemId._id === action.payload.menuItemId);
+        if (item && item.quantity > 1) {
+          item.quantity -= 1;
+        }
+      }
+    },
+    removeItemOptimistic: (state, action) => {
+      if (state.cart) {
+        state.cart.items = state.cart.items.filter(item => item.menuItemId._id !== action.payload.menuItemId);
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(addToCart.pending, (state) => {
@@ -182,43 +204,17 @@ const cartSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(increaseItemQuantity.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(increaseItemQuantity.fulfilled, (state, action) => {
-        state.loading = false;
         state.cart = action.payload;
-      })
-      .addCase(increaseItemQuantity.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(decreaseItemQuantity.pending, (state) => {
-        state.loading = true;
-        state.error = null;
       })
       .addCase(decreaseItemQuantity.fulfilled, (state, action) => {
-        state.loading = false;
         state.cart = action.payload;
-      })
-      .addCase(decreaseItemQuantity.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(removeItem.pending, (state) => {
-        state.loading = true;
-        state.error = null;
       })
       .addCase(removeItem.fulfilled, (state, action) => {
-        state.loading = false;
         state.cart = action.payload;
-      })
-      .addCase(removeItem.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
       });
   },
 });
 
+export const { increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic } = cartSlice.actions;
 export default cartSlice.reducer;

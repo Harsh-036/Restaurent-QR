@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMenu } from "../redux/menuSlice";
 import { addToCart } from "../redux/cartSlice";
@@ -9,15 +9,21 @@ const Main = () => {
   const dispatch = useDispatch();
   const { items: menuItems = [], loading, error } = useSelector((state) => state.menu);
   const { user } = useSelector((state) => state.auth);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     dispatch(fetchMenu());
   }, [dispatch]);
 
   // Derive categories from menu items
-const categories = Array.isArray(menuItems)
-  ? [...new Set(menuItems.map(item => item.category))]
-  : [];
+  const categories = Array.isArray(menuItems)
+    ? [...new Set(menuItems.map(item => item.category))]
+    : [];
+
+  // Filter menu items based on selected category
+  const filteredItems = selectedCategory
+    ? menuItems.filter(item => item.category === selectedCategory)
+    : menuItems;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35]">
@@ -64,10 +70,26 @@ const categories = Array.isArray(menuItems)
         {/* Categories */}
         {!loading && !error && categories.length > 0 && (
           <div className="flex flex-wrap justify-center gap-3">
+            <button
+              key="all"
+              onClick={() => setSelectedCategory(null)}
+              className={`px-5 py-2 rounded-full border text-sm transition ${
+                selectedCategory === null
+                  ? "bg-white text-black border-white"
+                  : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+              }`}
+            >
+              All
+            </button>
             {categories.map((cat) => (
               <button
                 key={cat}
-                className="px-5 py-2 rounded-full bg-white/10 border border-white/20 text-white text-sm hover:bg-white/20 transition"
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-5 py-2 rounded-full border text-sm transition ${
+                  selectedCategory === cat
+                    ? "bg-white text-black border-white"
+                    : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+                }`}
               >
                 {cat}
               </button>
@@ -76,9 +98,9 @@ const categories = Array.isArray(menuItems)
         )}
 
         {/* Menu Cards */}
-        {!loading && !error && menuItems.length > 0 && (
+        {!loading && !error && filteredItems.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {menuItems.map((item) => (
+            {filteredItems.map((item) => (
               <div
                 key={item._id}
                 className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform"
@@ -116,6 +138,13 @@ const categories = Array.isArray(menuItems)
         )}
 
         {/* No Menu Items */}
+        {!loading && !error && filteredItems.length === 0 && menuItems.length > 0 && (
+          <div className="text-center">
+            <p className="text-gray-300">No items found in this category.</p>
+          </div>
+        )}
+
+        {/* No Menu Items Overall */}
         {!loading && !error && menuItems.length === 0 && (
           <div className="text-center">
             <p className="text-gray-300">No menu items available.</p>
