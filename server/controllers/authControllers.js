@@ -189,4 +189,125 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-// lgow jqbh zzot jysf
+// FIND ACCOUNT
+export const findAccount = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user) {
+      res.json({ success: true, message: "Email found" });
+    } else {
+      res.json({ success: false, message: "Email not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// RESET PASSWORD (Send Email)
+export const resetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate reset token (JWT with 1 hour expiry)
+    const resetToken = jwt.sign(
+      { id: user._id, email: user.email },
+      jwtConfig.accessTokenSecret,
+      { expiresIn: '1h' }
+    );
+
+    // Save token and expiry to user
+    user.resetToken = resetToken;
+    user.resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    await user.save();
+
+    // Send reset email
+    const resetUrl = `http://localhost:5173/forgetpassword?token=${resetToken}`;
+    const mailOptions = {
+      from: "sharmaharshharsh1234@gmail.com",
+      to: user.email,
+      subject: "Password Reset Request",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Password Reset Request</h2>
+          <p>Hello ${user.name},</p>
+          <p>You requested a password reset for your account.</p>
+          <p>Click the link below to reset your password:</p>
+          <a href="${resetUrl}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0;">Reset Password</a>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <p>Best regards,<br>SavouryBites Team</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({ message: "Password reset email sent successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// FORGET PASSWORD (Update Password)
+export const forgetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    // Verify token
+    const decoded = jwt.verify(token, jwtConfig.accessTokenSecret);
+
+    // Find user by decoded id
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if token matches and is not expired
+    if (user.resetToken !== token) {
+      return res.status(400).json({ message: "Invalid token" });
+    }
+
+    if (user.resetTokenExpiry < new Date()) {
+      return res.status(400).json({ message: "Token expired" });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password and clear reset token
+    user.passwordHash = hashedPassword;
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(400).json({ message: "Invalid token" });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(400).json({ message: "Token expired" });
+    }
+    res.status(500).json({ message: "Server error", error });
+  }
+};

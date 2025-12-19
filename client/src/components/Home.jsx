@@ -179,6 +179,18 @@ const Home = () => {
             </button>
           </form>
 
+          {/* FORGOT PASSWORD LINK (only show in login mode) */}
+          {!isSignup && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => navigate('/resetpassword')}
+                className="text-blue-400 hover:text-blue-300 transition text-sm"
+              >
+                Forgot Password?
+              </button>
+            </div>
+          )}
+
           {/* SWITCH FORM */}
           <div className="mt-8 text-center">
             <button

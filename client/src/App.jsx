@@ -7,6 +7,8 @@ import ProtectRoute from "./components/ProtectRoute";
 import Welcome from "./components/Welcome";
 import UpdateProfile from "./components/pages/updateProfile";
 import Cart from "./components/Cart";
+import ResetPassword from "./components/pages/ResetPassword";
+import ForgetPassword from "./components/pages/ForgetPassword";
 
 const App = () => {
   return (
@@ -42,6 +44,8 @@ const App = () => {
             }
           />
           <Route path="/login" element={<Home />} />
+          <Route path="/resetpassword" element={<ResetPassword />} />
+          <Route path="/forgetpassword" element={<ForgetPassword />} />
           <Route path="/welcome" element={<Welcome />} />
         </Routes>
       </div>
