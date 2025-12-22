@@ -9,6 +9,7 @@ import UpdateProfile from "./components/pages/updateProfile";
 import Cart from "./components/Cart";
 import ResetPassword from "./components/pages/ResetPassword";
 import ForgetPassword from "./components/pages/ForgetPassword";
+import Dashboard from "./components/pages/Dashboard";
 
 const App = () => {
   return (
@@ -40,6 +41,15 @@ const App = () => {
             element={
               <ProtectRoute>
                 <Cart />
+              </ProtectRoute>
+            }
+          />
+          {/* protected dashboard page */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectRoute requiredRole="admin">
+                <Dashboard />
               </ProtectRoute>
             }
           />

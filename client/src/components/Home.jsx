@@ -21,7 +21,9 @@ const Home = () => {
     if (isAuthenticated && refreshTokenExpiry) {
       const message = isSignup ? "Signup successful!" : `Login successful! ${refreshTokenExpiry}`;
       alert(message);
-      navigate("/");
+      const userRole = localStorage.getItem('userRole');
+      const redirectPath = userRole === 'admin' ? '/dashboard' : '/';
+      navigate(redirectPath);
     }
   }, [isAuthenticated, navigate, isSignup, refreshTokenExpiry]);
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from './navbar';
 
-const ProtectRoute = ({ children }) => {
+const ProtectRoute = ({ children, requiredRole }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -27,6 +27,14 @@ const ProtectRoute = ({ children }) => {
             Authorization: `Bearer ${token}`,
           },
         });
+        // Check role if required
+        if (requiredRole) {
+          const userRole = localStorage.getItem('userRole');
+          if (userRole !== requiredRole) {
+            navigate('/');
+            return;
+          }
+        }
         setIsAuthenticated(true);
       } catch (error) {
         // Token is invalid, redirect to login
