@@ -59,37 +59,18 @@ const Navbar = () => {
 
       {/* MIDDLE - NAV LINKS */}
       <div className="hidden md:flex space-x-10 text-lg font-medium">
-        {userRole === "admin" && (
-          <>
-            <Link to="/dashboard" className="hover:text-blue-400 transition">
-              Dashboard
-            </Link>
-
-            <Link to="/table" className="hover:text-blue-400 transition">
-              Table
-            </Link>
-
-            <Link to="/menu" className="hover:text-blue-400 transition">
-          Menu
-        </Link>
-
-        <Link to="/orders" className="hover:text-blue-400 transition">
-          Orders
-        </Link>
-          </>
+        {userRole !== "admin" && (
+          <button
+            className="relative p-2 text-gray-300 hover:text-white transition-colors"
+            aria-label="Shopping cart"
+            onClick={() => navigate("/cart")}
+          >
+            <ShoppingCart className="w-6 h-6" />
+            <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {cartItems.length}
+            </span>
+          </button>
         )}
-
-        
-        <button
-          className="relative p-2 text-gray-300 hover:text-white transition-colors"
-          aria-label="Shopping cart"
-          onClick={() => navigate("/cart")}
-        >
-          <ShoppingCart className="w-6 h-6" />
-          <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-            {cartItems.length} 
-          </span>
-        </button>
       </div>
 
       {/* RIGHT - USER BOX with DROPDOWN or REGISTER LINK */}

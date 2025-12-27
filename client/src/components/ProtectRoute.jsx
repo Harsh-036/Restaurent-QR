@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from './navbar';
 
@@ -28,12 +28,15 @@ const ProtectRoute = ({ children, requiredRole }) => {
           },
         });
         // Check role if required
+        const userRole = localStorage.getItem('userRole');
         if (requiredRole) {
-          const userRole = localStorage.getItem('userRole');
           if (userRole !== requiredRole) {
             navigate('/');
             return;
           }
+        } else if (userRole === 'admin' && location.pathname !== '/profile') {
+          navigate('/dashboard');
+          return;
         }
         setIsAuthenticated(true);
       } catch (error) {

@@ -138,3 +138,24 @@
       METHOD: POST
       IP: ::1
     
+2025-12-27 17:14:24 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-27 17:14:26 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot read properties of null (reading 'tableNumber')
+      URL: /api/session
+      METHOD: POST
+      IP: ::1
+    
+2025-12-27 17:20:39 | ERROR | 
+      STATUS: 400
+      MESSAGE: Expected ',' or '}' after property value in JSON at position 86 (line 2 column 85)
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
