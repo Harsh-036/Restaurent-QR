@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 // Async thunk for fetching menu
 export const fetchMenu = createAsyncThunk(
   'menu/fetchMenu',
-  async (_, { rejectWithValue }) => {
+  async ({ page = 1, category = null }, { rejectWithValue }) => {
     try {
       const accessToken = localStorage.getItem('accessToken');
       const sessionToken = localStorage.getItem('sessionToken');
@@ -13,7 +13,15 @@ export const fetchMenu = createAsyncThunk(
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:3000/api/menu', {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: '9',
+      });
+      if (category) {
+        queryParams.append('category', category);
+      }
+
+      const response = await fetch(`http://localhost:3000/api/menu?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -26,7 +34,7 @@ export const fetchMenu = createAsyncThunk(
       }
 
       const data = await response.json();
-      return data.data; // The menu items are in data.data
+      return data; // Return the full response including pagination
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -37,6 +45,13 @@ const menuSlice = createSlice({
   name: 'menu',
   initialState: {
     items: [],
+    categories: [],
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: 0,
+      limit: 9,
+    },
     loading: false,
     error: null,
   },
@@ -49,7 +64,9 @@ const menuSlice = createSlice({
       })
       .addCase(fetchMenu.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = Array.isArray(action.payload) ? action.payload : [];
+        state.items = Array.isArray(action.payload.data) ? action.payload.data : [];
+        state.categories = Array.isArray(action.payload.categories) ? action.payload.categories : [];
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchMenu.rejected, (state, action) => {
         state.loading = false;

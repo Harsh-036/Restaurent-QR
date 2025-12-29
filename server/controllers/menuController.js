@@ -30,21 +30,38 @@ export const createMenu = async (req, res) => {
 };
 
 
-// GET MENU (WITH CATEGORY FILTER)
+// GET MENU (WITH CATEGORY FILTER AND PAGINATION)
 
 export const getMenu = async (req, res) => {
   try {
-    const { category } = req.query;
+    const { category, page = 1, limit = 9 } = req.query;
 
     let filter = {};
     if (category) {
       filter.category = category; // filter by category
     }
 
-    const menuItems = await Menu.find(filter);
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    const totalItems = await Menu.countDocuments(filter);
+    const menuItems = await Menu.find(filter).skip(skip).limit(limitNum);
+
+    const totalPages = Math.ceil(totalItems / limitNum);
+
+    // Get all categories for filtering
+    const allCategories = await Menu.distinct('category');
 
     res.status(200).json({
       data: menuItems,
+      categories: allCategories,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalItems,
+        limit: limitNum,
+      },
       message: 'Menu fetched successfully',
     });
   } catch (error) {

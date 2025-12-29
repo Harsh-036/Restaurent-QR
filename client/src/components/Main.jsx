@@ -7,23 +7,20 @@ import Hero from "../components/Hero";
 
 const Main = () => {
   const dispatch = useDispatch();
-  const { items: menuItems = [], loading, error } = useSelector((state) => state.menu);
+  const { items: menuItems = [], categories: allCategories = [], pagination, loading, error } = useSelector((state) => state.menu);
   const { user } = useSelector((state) => state.auth);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchMenu());
-  }, [dispatch]);
+    dispatch(fetchMenu({ page: currentPage, category: selectedCategory }));
+  }, [dispatch, currentPage, selectedCategory]);
 
-  // Derive categories from menu items
-  const categories = Array.isArray(menuItems)
-    ? [...new Set(menuItems.map(item => item.category))]
-    : [];
+  // Use categories from Redux
+  const categories = allCategories;
 
-  // Filter menu items based on selected category
-  const filteredItems = selectedCategory
-    ? menuItems.filter(item => item.category === selectedCategory)
-    : menuItems;
+  // Menu items are already filtered by category on backend, so use menuItems directly
+  const filteredItems = menuItems;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35]">
@@ -72,7 +69,10 @@ const Main = () => {
           <div className="flex flex-wrap justify-center gap-3">
             <button
               key="all"
-              onClick={() => setSelectedCategory(null)}
+              onClick={() => {
+                setSelectedCategory(null);
+                setCurrentPage(1);
+              }}
               className={`px-5 py-2 rounded-full border text-sm transition ${
                 selectedCategory === null
                   ? "bg-white text-black border-white"
@@ -84,7 +84,10 @@ const Main = () => {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setCurrentPage(1);
+                }}
                 className={`px-5 py-2 rounded-full border text-sm transition ${
                   selectedCategory === cat
                     ? "bg-white text-black border-white"
@@ -99,42 +102,87 @@ const Main = () => {
 
         {/* Menu Cards */}
         {!loading && !error && filteredItems.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredItems.map((item) => (
-              <div
-                key={item._id}
-                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform"
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-48 w-full object-cover"
-                />
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredItems.map((item) => (
+                <div
+                  key={item._id}
+                  className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="h-48 w-full object-cover"
+                  />
 
-                <div className="p-5 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold text-white">
-                      {item.name}
-                    </h3>
-                    <span className="text-white font-bold">
-                      ₹{item.price}
-                    </span>
+                  <div className="p-5 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-semibold text-white">
+                        {item.name}
+                      </h3>
+                      <span className="text-white font-bold">
+                        ₹{item.price}
+                      </span>
+                    </div>
+
+                    <p className="text-gray-300 text-sm">
+                      {item.description}
+                    </p>
+
+                    <button
+                      onClick={() => dispatch(addToCart({ menuItemId: item._id, quantity: 1 }))}
+                      className="w-full mt-3 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
-
-                  <p className="text-gray-300 text-sm">
-                    {item.description}
-                  </p>
-
-                  <button
-                    onClick={() => dispatch(addToCart({ menuItemId: item._id, quantity: 1 }))}
-                    className="w-full mt-3 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition"
-                  >
-                    Add to Cart
-                  </button>
                 </div>
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {pagination.totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg border text-sm transition ${
+                    currentPage === 1
+                      ? "bg-gray-600 text-gray-400 border-gray-500 cursor-not-allowed"
+                      : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  }`}
+                >
+                  Previous
+                </button>
+
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-2 rounded-lg border text-sm transition ${
+                      page === currentPage
+                        ? "bg-white text-black border-white"
+                        : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === pagination.totalPages}
+                  className={`px-4 py-2 rounded-lg border text-sm transition ${
+                    currentPage === pagination.totalPages
+                      ? "bg-gray-600 text-gray-400 border-gray-500 cursor-not-allowed"
+                      : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  }`}
+                >
+                  Next
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
 
         {/* No Menu Items */}
