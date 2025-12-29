@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import Navbar from './navbar';
 
 const ProtectRoute = ({ children, requiredRole }) => {
@@ -19,12 +20,41 @@ const ProtectRoute = ({ children, requiredRole }) => {
       return;
     }
 
+    // Function to check if token is expired
+    const isTokenExpired = (token) => {
+      try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        return decoded.exp < currentTime;
+      } catch (error) {
+        return true; // If decoding fails, consider it expired
+      }
+    };
+
+    // Function to refresh access token
+    const refreshAccessToken = async () => {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (!refreshToken) return false;
+
+      try {
+        const response = await axios.post('http://localhost:3000/api/refresh-token', {
+          refreshToken,
+        });
+        const { accessToken } = response.data;
+        localStorage.setItem('accessToken', accessToken);
+        return true;
+      } catch (error) {
+        console.error('Token refresh failed:', error);
+        return false;
+      }
+    };
+
     // Validate token by making a test request
-    const validateToken = async () => {
+    const validateToken = async (currentToken) => {
       try {
         await axios.get('http://localhost:3000/menu', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${currentToken}`,
           },
         });
         // Check role if required
@@ -52,7 +82,28 @@ const ProtectRoute = ({ children, requiredRole }) => {
       }
     };
 
-    validateToken();
+    // Check if access token is expired and refresh if needed
+    const checkAndRefreshToken = async () => {
+      let currentToken = token;
+      if (accessToken && isTokenExpired(accessToken)) {
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          currentToken = localStorage.getItem('accessToken');
+        } else {
+          // Refresh failed, redirect to login
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('sessionToken');
+          localStorage.removeItem('userName');
+          localStorage.removeItem('userRole');
+          navigate('/login');
+          setLoading(false);
+          return;
+        }
+      }
+      validateToken(currentToken);
+    };
+
+    checkAndRefreshToken();
   }, [navigate]);
 
   if (loading) {

@@ -1,8 +1,92 @@
-export const getAllCoupans = ()=>{
-
-}
-
 import Coupan from "../models/coupan.js";
+import Cart from '../models/cart.js'
+import User from '../models/user.js'
+
+
+export const getAllCoupans = async (req, res)=>{
+  try {
+    const { cartTotal } = req.query;
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+    console.log('fetched from database', user);
+    //user cart fetch //totalCartPrice ;
+    const cart = await Cart.findOne({ userId });
+    let totalCartPrice;
+    if (cart) {
+      totalCartPrice = cart.totalCartPrice;
+    }
+    console.log(totalCartPrice);
+
+    //how to fetch all coupans than apply map method ;
+    const allCoupans = await Coupan.find();
+    console.log(allCoupans);
+
+    // const AvailableCoupans = allCoupans.filter((coupan) => {
+    //   return (
+    //     totalCartPrice > coupan.minOrderAmount &&
+    //     new Date() > coupan.validFrom &&
+    //     new Date() < coupan.validTo
+    //   );
+    // });
+    // console.log(filteredCoupans)
+    //discount value again the totalprice ;
+
+    const CoupansAfterCalculation = allCoupans.map((coupans) => {
+      //calculate isAvailable flag
+      const isCartPriceMeetsMinOrderAmount =
+        totalCartPrice > coupans.minOrderAmount;
+      const isCoupanIsValid =
+        new Date() > coupans.validFrom && new Date() < coupans.validTo;
+      const isUserFirstTime = user.totalOrders === 0;
+      const isCoupanIsForFirstOrder = coupans.isFirstOrder;
+      console.log(coupans.code, isCartPriceMeetsMinOrderAmount);
+
+      const isAvailable =
+        isCartPriceMeetsMinOrderAmount &&
+        isCoupanIsValid &&
+        (isCoupanIsForFirstOrder ? isUserFirstTime : true);
+
+      let discountAmount;
+      if (coupans.discountType) {
+        if (coupans.discountType === 'fixedAmount') {
+          discountAmount = totalCartPrice - coupans.discountValue;
+        }
+        if (coupans.discountType === 'percentage') {
+          discountAmount = (totalCartPrice * coupans.discountValue) / 100;
+        }
+        if (coupans.maxDiscount && discountAmount > coupans.maxDiscount) {
+          discountAmount = coupans.maxDiscount;
+        }
+      }
+      return {
+        _id: coupans._id,
+
+        finalAmount: totalCartPrice - discountAmount,
+        code: coupans.code,
+        discountType: coupans.discountType,
+        description: coupans.description,
+        discountAmount,
+        isFirstOrder: coupans.isFirstOrder,
+        minOrderAmount: coupans.minOrderAmount,
+        validFrom: coupans.validFrom,
+        validTo: coupans.validTo,
+        isAvailable,
+        isCartPriceMeetsMinOrderAmount,
+        totalCartPrice,
+      };
+    });
+    //  500 * 10 / 100 => 50
+    //1000 * 10 / 100 => 100   maxDiscount = 150
+    //2000 * 10 / 200 > maxDiscount = 150
+    // disocuntValue = maxDiscount;
+    res.json({
+      CoupansAfterCalculation,
+    });
+  } catch (error) {}
+};
+
+
 
 export const registerCoupan = async (req, res) => {
   try {
@@ -54,3 +138,5 @@ export const registerCoupan = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+//validate coupan, applyCoupan
