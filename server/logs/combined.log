@@ -159,3 +159,59 @@
       METHOD: POST
       IP: ::ffff:127.0.0.1
     
+2025-12-30 14:19:37 | ERROR | 
+      STATUS: 500
+      MESSAGE: next is not defined
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
+2025-12-30 14:20:26 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cart is not defined
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
+2025-12-30 14:30:52 | ERROR | 
+      STATUS: 500
+      MESSAGE: coupanCode is not defined
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
+2025-12-30 14:31:45 | ERROR | 
+      STATUS: 500
+      MESSAGE: coupanCode is not defined
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
+2025-12-30 14:31:52 | ERROR | 
+      STATUS: 500
+      MESSAGE: coupanCode is not defined
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
+2025-12-30 14:33:39 | ERROR | 
+      STATUS: 500
+      MESSAGE: coupanCode is not defined
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
+2025-12-30 14:39:02 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cannot access 'subTotal' before initialization
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
+2025-12-30 14:58:44 | ERROR | 
+      STATUS: 404
+      MESSAGE: No table Found
+      URL: /api/orders
+      METHOD: POST
+      IP: ::ffff:127.0.0.1
+    
