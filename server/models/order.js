@@ -1,22 +1,22 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
   orderNumber: {
-    type: Number,
-    unique: true,  //order collection 4 order.countDocuments()+1
+    type: String,
+    unique: true, //order collection 4 order.countDocumnets() + 5
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // client=> localstorage
-  },
+    ref: 'User',
+  }, // client => localStorage => req.body //req.user.id
   sessionToken: {
-    type: String, //client => localstorage
-  },
-  items: [ //client or db ;
+    type: String,
+  }, //client => localStorage => req.body
+  items: [
     {
       menuItemId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Menu",
+        ref: 'Menu',
       },
       name: {
         type: String,
@@ -32,19 +32,19 @@ const orderSchema = new mongoose.Schema({
         required: true,
       },
     },
-  ],
+  ], //client or db using db ;
   subTotal: {
     type: Number,
-  }, // db
+  }, //db
   discountAmount: {
     type: Number,
-  }, /// client or db
+  }, //client ya db
   coupanCode: {
     type: String,
   }, //client
   finalAmount: {
     type: Number,
-  },// client
+  }, //client
   tableNumber: {
     type: Number,
   }, //client
@@ -53,30 +53,48 @@ const orderSchema = new mongoose.Schema({
   }, //client
   customerName: {
     type: String,
-  }, //client
+  }, //clinet
+  customerPhone: {
+    type: String,
+  },
   notes: {
+    type: String,
+  }, //client
+  paymentMethod: {
+    type: String,
+    enum: ['cash', 'razorpay'],
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'failed', 'success', 'refund'],
+  },
+  orderStatus: {
+    type: String,
+    enum: ['pending', 'preparing', 'ready', 'served'],
+    default: 'pending',
+  },
+  razorPayOrderId: {
+    type: String,
+  },
+  razorPayPaymentId: {
+    type: String,
+  },
+  razorPaySignature: {
     type: String,
   },
 });
 
-const Order = mongoose.model("Order", orderSchema);
+const Order = mongoose.model('Order', orderSchema);
 
 export default Order;
 
-// {
-//     orderNumber : 1 ,
-//     userId : "32lkklwjrkjwl",
-//     sessionToken : null ,
-//     items : [
-//         {menuItemId : 'fdafdsfd' , name : "burge" , price : 50 , quantiy : 2 , subtotal : 100}
-//         {menuItemId : 'fdafdd' , name : "pizza"  , price : 100 , quantiy : 2 , subtotal : 200}
-//     ],
-//     subtotal : 300 ,
-//     coupancode : 'first30' ,
-//     discountAmount : 30 ,
-//     finalAmount : 270 ,
-//     tableNUmber : 2 ,
-//     customerEmail : "ritesh@gmail.com",
-//     customerName : "ritesh",
-//     notes  : "add some cheese"
-//  }
+//NOTE paymentid , method => cash , upi
+//NOTE order status => pending , confirmed , preprating read y
+
+//login => userId => menu => menuId => cart => cartId => order
+
+//payment mode => client
+// (paymentStatus) => pedning, failed;
+//orderStatus => pending , confirmed , preparing
+
+//note razopay
