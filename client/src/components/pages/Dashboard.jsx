@@ -51,6 +51,16 @@ const Dashboard = () => {
               Orders
             </Link>
           </li>
+          <li>
+            <Link
+              to="/coupans"
+              className={`block py-2 px-4 rounded transition ${
+                location.pathname === '/coupans' ? 'bg-white/20' : 'hover:bg-white/10'
+              }`}
+            >
+              Coupans
+            </Link>
+          </li>
         </ul>
       </div>
 

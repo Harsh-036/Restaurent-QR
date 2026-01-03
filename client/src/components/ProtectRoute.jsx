@@ -64,7 +64,7 @@ const ProtectRoute = ({ children, requiredRole }) => {
             navigate('/');
             return;
           }
-        } else if (userRole === 'admin' && location.pathname !== '/profile') {
+        } else if (userRole === 'admin' && !['/profile', '/menu'].includes(location.pathname)) {
           navigate('/dashboard');
           return;
         }

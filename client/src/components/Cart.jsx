@@ -1,15 +1,18 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingBag, ChevronDown, ChevronUp } from "lucide-react";
 import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem, increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic } from "../redux/cartSlice";
+import { getCoupons } from "../redux/couponSlice";
 
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { cart, loading, error } = useSelector((state) => state.cart);
+  const { coupons, loading: couponLoading } = useSelector((state) => state.coupon);
 
-
+  const [showCoupons, setShowCoupons] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const cartItems = cart?.items || [];
 
@@ -22,12 +25,26 @@ const Cart = () => {
     [cartItems]
   );
 
+  const discountedTotal = useMemo(() => {
+    if (appliedCoupon && appliedCoupon.discountAmount) {
+      return totalPrice - appliedCoupon.discountAmount;
+    }
+    return totalPrice;
+  }, [totalPrice, appliedCoupon]);
+
   // TODO: Implement updateQuantity and removeItem with server calls
 
   // Fetch cart data on component mount
   useEffect(() => {
     dispatch(getCart());
   }, [dispatch]);
+
+  // Fetch coupons when totalPrice changes
+  useEffect(() => {
+    if (totalPrice > 0) {
+      dispatch(getCoupons(totalPrice));
+    }
+  }, [totalPrice, dispatch]);
 
   if (loading) {
     return (
@@ -193,17 +210,61 @@ const Cart = () => {
               <span>Subtotal</span>
               <span>₹{totalPrice}</span>
             </div>
+            {appliedCoupon && appliedCoupon.discountAmount > 0 && (
+              <div className="flex justify-between text-green-400">
+                <span>Discount ({appliedCoupon.code})</span>
+                <span>-₹{appliedCoupon.discountAmount}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span>GST (18%)</span>
-              <span>₹{Math.round(totalPrice * 0.18)}</span>
+              <span>₹{Math.round(discountedTotal * 0.18)}</span>
             </div>
             <div className="border-t border-white/20 pt-4 flex justify-between text-white font-semibold">
               <span>Total</span>
               <span>
-                ₹{totalPrice + Math.round(totalPrice * 0.18)}
+                ₹{discountedTotal + Math.round(discountedTotal * 0.18)}
               </span>
             </div>
           </div>
+
+          {/* Coupons Section */}
+          {couponLoading ? (
+            <div className="mt-4 text-gray-300">Loading coupons...</div>
+          ) : (
+            <div className="mt-4">
+              <button
+                onClick={() => setShowCoupons(!showCoupons)}
+                className="flex items-center justify-between w-full text-left text-lg font-semibold text-white hover:text-gray-300 transition"
+              >
+                <span>Available Coupons</span>
+                {showCoupons ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              </button>
+              {showCoupons && (
+                <div className="mt-2">
+                  {coupons.length > 0 ? (
+                    [...coupons].sort((a, b) => b.isAvailable - a.isAvailable).map((coupon) => (
+                      <button
+                        key={coupon._id || coupon.code}
+                        onClick={() => setAppliedCoupon(coupon)}
+                        disabled={!coupon.isAvailable}
+                        type="button"
+                        className={`w-full text-left p-2 border rounded mb-2 transition ${coupon.isAvailable ? 'opacity-100 border-green-500 hover:bg-green-500/10' : 'opacity-50 border-gray-500 cursor-not-allowed'}`}
+                      >
+                        <div className="font-semibold text-white">{coupon.code}</div>
+                        <div className="text-sm text-gray-300">{coupon.description}</div>
+                        {coupon.isAvailable && coupon.discountAmount > 0 && (
+                          <div className="text-green-400">Save ₹{coupon.discountAmount}</div>
+                        )}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-gray-300">No coupons available</div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           <button className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">
             Proceed to Checkout

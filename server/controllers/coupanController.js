@@ -93,6 +93,7 @@ export const registerCoupan = async (req, res) => {
     const {
       code,
       discountType,
+      discountValue,
       maxDiscount,
       validFrom,
       validTo,
@@ -115,6 +116,7 @@ export const registerCoupan = async (req, res) => {
     const coupanData = {
       code: code.toUpperCase(),
       discountType,
+      discountValue: discountValue || null,
       maxDiscount: maxDiscount || null,
       validFrom: validFrom || new Date(),
       validTo: validTo || null,
@@ -135,6 +137,63 @@ export const registerCoupan = async (req, res) => {
     });
   } catch (error) {
     console.error('Error registering coupan:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Update coupon
+export const updateCoupan = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    if (updateData.code) {
+      updateData.code = updateData.code.toUpperCase();
+      const existingCoupan = await Coupan.findOne({
+        code: updateData.code,
+        _id: { $ne: id }
+      });
+      if (existingCoupan) {
+        return res.status(400).json({ message: 'Coupan code already exists' });
+      }
+    }
+
+    const updatedCoupan = await Coupan.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!updatedCoupan) {
+      return res.status(404).json({ message: 'Coupan not found' });
+    }
+
+    res.json({
+      message: 'Coupan updated successfully',
+      coupan: updatedCoupan,
+    });
+  } catch (error) {
+    console.error('Error updating coupan:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Delete coupon
+export const deleteCoupan = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedCoupan = await Coupan.findByIdAndDelete(id);
+
+    if (!deletedCoupan) {
+      return res.status(404).json({ message: 'Coupan not found' });
+    }
+
+    res.json({
+      message: 'Coupan deleted successfully',
+      coupan: deletedCoupan,
+    });
+  } catch (error) {
+    console.error('Error deleting coupan:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
