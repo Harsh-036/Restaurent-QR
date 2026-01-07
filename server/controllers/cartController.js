@@ -228,3 +228,48 @@ export const clearCart = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
+
+// Migrate guest cart to user cart
+export const migrateCart = async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+
+    // Find guest cart
+    const guestCart = await Cart.findOne({ sessionId });
+    if (!guestCart || guestCart.items.length === 0) {
+      return res.status(200).json({ message: 'No guest cart to migrate', cart: { items: [], totalCartPrice: 0 } });
+    }
+
+    // Find or create user cart
+    let userCart = await Cart.findOne({ userId: req.user._id });
+    if (!userCart) {
+      userCart = new Cart({
+        userId: req.user._id,
+        items: [],
+        totalCartPrice: 0,
+      });
+    }
+
+    // Merge items
+    guestCart.items.forEach(guestItem => {
+      const existingItem = userCart.items.find(item => item.menuItemId.toString() === guestItem.menuItemId.toString());
+      if (existingItem) {
+        existingItem.quantity += guestItem.quantity;
+      } else {
+        userCart.items.push(guestItem);
+      }
+    });
+
+    // Recalculate price
+    await updateTotalPrice(userCart);
+    await userCart.save();
+
+    // Delete guest cart
+    await Cart.deleteOne({ sessionId });
+
+    const populatedCart = await Cart.findById(userCart._id).populate('items.menuItemId');
+    res.status(200).json({ message: 'Cart migrated successfully', cart: populatedCart });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};

@@ -148,6 +148,34 @@ export const removeItem = createAsyncThunk(
   }
 );
 
+// Async thunk for migrating guest cart to user cart
+export const migrateCart = createAsyncThunk(
+  'cart/migrateCart',
+  async ({ sessionId }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+
+      if (!token) throw new Error('No authentication token found');
+
+      const response = await fetch('http://localhost:3000/api/migratecart', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sessionId }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+
+      return data.cart;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState: {
@@ -212,6 +240,20 @@ const cartSlice = createSlice({
       })
       .addCase(removeItem.fulfilled, (state, action) => {
         state.cart = action.payload;
+      })
+      .addCase(migrateCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(migrateCart.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cart = action.payload;
+        localStorage.removeItem('sessionToken');
+        localStorage.removeItem('sessionId');
+      })
+      .addCase(migrateCart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

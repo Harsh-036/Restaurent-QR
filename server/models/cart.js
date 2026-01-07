@@ -5,6 +5,10 @@ const cartScehma = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }, //comes from ui
+  sessionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Session',
+  }, // for guest carts
   items: [
     {
       menuItemId: {
@@ -13,7 +17,7 @@ const cartScehma = new mongoose.Schema({
       },
       quantity: {
         type: Number,
-    
+
       }, //comes from ui
     },
   ],

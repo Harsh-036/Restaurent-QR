@@ -4,6 +4,7 @@ import guestReducer from './guestSlice';
 import menuReducer from './menuSlice';
 import cartReducer from './cartSlice';
 import couponReducer from './couponSlice';
+import tableReducer from './tableSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     guest: guestReducer,
     menu: menuReducer,
     cart: cartReducer,
-    coupon: couponReducer
+    coupon: couponReducer,
+    table: tableReducer
   },
 });

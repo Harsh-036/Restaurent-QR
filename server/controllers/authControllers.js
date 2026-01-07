@@ -34,10 +34,33 @@ export const register = async (req, res) => {
     const user = new User({
       name,
       email,
-      phone,
+      phone: Number(phone),
       passwordHash: hashedPassword,
       isActive: true,
     });
+
+    await user.save();
+
+    // Generate tokens after saving user
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // Calculate refresh token expiry time (7 days from now)
+    const refreshTokenExpiryTime = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000
+    );
+
+    user.refreshToken = refreshToken;
+    user.refreshTokenExpiresTime = refreshTokenExpiryTime;
+    await user.save();
+
+    // Calculate remaining time in days and hours
+    const now = new Date();
+    const timeDiff = refreshTokenExpiryTime - now;
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const expiryMessage = `Refresh token expires in ${days} days and ${hours} hours`;
 
     //integrate mail service here
     const info = await transporter.sendMail({
@@ -48,8 +71,13 @@ export const register = async (req, res) => {
     });
     console.log("mail sent", info.messageId);
 
-    await user.save();
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({
+      user,
+      accessToken,
+      refreshToken,
+      refreshTokenExpiry: expiryMessage,
+      message: "User registered successfully"
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

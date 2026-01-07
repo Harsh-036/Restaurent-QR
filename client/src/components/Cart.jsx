@@ -39,12 +39,14 @@ const Cart = () => {
     dispatch(getCart());
   }, [dispatch]);
 
-  // Fetch coupons when totalPrice changes
+  const userRole = localStorage.getItem('userRole');
+
+  // Fetch coupons when totalPrice changes (only for logged-in users)
   useEffect(() => {
-    if (totalPrice > 0) {
+    if (totalPrice > 0 && userRole !== 'guest') {
       dispatch(getCoupons(totalPrice));
     }
-  }, [totalPrice, dispatch]);
+  }, [totalPrice, dispatch, userRole]);
 
   if (loading) {
     return (
@@ -228,47 +230,67 @@ const Cart = () => {
             </div>
           </div>
 
-          {/* Coupons Section */}
-          {couponLoading ? (
-            <div className="mt-4 text-gray-300">Loading coupons...</div>
-          ) : (
-            <div className="mt-4">
-              <button
-                onClick={() => setShowCoupons(!showCoupons)}
-                className="flex items-center justify-between w-full text-left text-lg font-semibold text-white hover:text-gray-300 transition"
-              >
-                <span>Available Coupons</span>
-                {showCoupons ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-              </button>
-              {showCoupons && (
-                <div className="mt-2">
-                  {coupons.length > 0 ? (
-                    [...coupons].sort((a, b) => b.isAvailable - a.isAvailable).map((coupon) => (
-                      <button
-                        key={coupon._id || coupon.code}
-                        onClick={() => setAppliedCoupon(coupon)}
-                        disabled={!coupon.isAvailable}
-                        type="button"
-                        className={`w-full text-left p-2 border rounded mb-2 transition ${coupon.isAvailable ? 'opacity-100 border-green-500 hover:bg-green-500/10' : 'opacity-50 border-gray-500 cursor-not-allowed'}`}
-                      >
-                        <div className="font-semibold text-white">{coupon.code}</div>
-                        <div className="text-sm text-gray-300">{coupon.description}</div>
-                        {coupon.isAvailable && coupon.discountAmount > 0 && (
-                          <div className="text-green-400">Save ₹{coupon.discountAmount}</div>
-                        )}
-                      </button>
-                    ))
-                  ) : (
-                    <div className="text-gray-300">No coupons available</div>
-                  )}
-                </div>
-              )}
+          {/* Coupons Section or Guest Message */}
+          {userRole === 'guest' ? (
+            <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <p className="text-blue-300 text-sm">
+                Login and purchase your first order to get a discount!
+              </p>
             </div>
+          ) : (
+            couponLoading ? (
+              <div className="mt-4 text-gray-300">Loading coupons...</div>
+            ) : (
+              <div className="mt-4">
+                <button
+                  onClick={() => setShowCoupons(!showCoupons)}
+                  className="flex items-center justify-between w-full text-left text-lg font-semibold text-white hover:text-gray-300 transition"
+                >
+                  <span>Available Coupons</span>
+                  {showCoupons ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </button>
+                {showCoupons && (
+                  <div className="mt-2">
+                    {coupons.length > 0 ? (
+                      [...coupons].sort((a, b) => b.isAvailable - a.isAvailable).map((coupon) => (
+                        <button
+                          key={coupon._id || coupon.code}
+                          onClick={() => setAppliedCoupon(coupon)}
+                          disabled={!coupon.isAvailable}
+                          type="button"
+                          className={`w-full text-left p-2 border rounded mb-2 transition ${coupon.isAvailable ? 'opacity-100 border-green-500 hover:bg-green-500/10' : 'opacity-50 border-gray-500 cursor-not-allowed'}`}
+                        >
+                          <div className="font-semibold text-white">{coupon.code}</div>
+                          <div className="text-sm text-gray-300">{coupon.description}</div>
+                          {coupon.isAvailable && coupon.discountAmount > 0 && (
+                            <div className="text-green-400">Save ₹{coupon.discountAmount}</div>
+                          )}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="text-gray-300">No coupons available</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
           )}
 
-          <button className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">
-            Proceed to Checkout
-          </button>
+          {userRole === 'guest' ? (
+            <button
+              onClick={() => navigate('/login', { state: { fromCart: true, showSignup: true } })}
+              className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
+            >
+              Sign Up to Proceed to Checkout
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/checkout')}
+              className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
+            >
+              Proceed to Checkout
+            </button>
+          )}
 
           <button
             onClick={() => navigate("/")}

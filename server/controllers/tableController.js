@@ -126,15 +126,32 @@ export const updateTable = async (req, res, next) => {
   }
 };
 
+export const toggleTableStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const table = await Table.findById(id);
+
+    if (!table) {
+      const error = new Error("Table not found");
+      error.status = 404;
+      throw error;
+    }
+
+    table.isActive = !table.isActive;
+    await table.save();
+
+    successResponse(res, 200, table);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteTable = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const deletedTable = await Table.findByIdAndUpdate(
-      id,
-      { isActive: false },
-      { new: true }
-    );
+    const deletedTable = await Table.findByIdAndDelete(id);
 
     if (!deletedTable) {
       const error = new Error("Table not found");

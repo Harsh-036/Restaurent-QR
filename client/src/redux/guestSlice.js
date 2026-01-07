@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const initialState = {
   sessionToken: null,
+  sessionId: null,
   loading: false,
   error: null,
 };
@@ -28,7 +29,9 @@ const guestSlice = createSlice({
       .addCase(session.fulfilled, (state, action) => {
         console.log(action.payload);
         state.sessionToken = action.payload.data.sessionToken;
+        state.sessionId = action.payload.data.sessionId;
         localStorage.setItem('sessionToken', action.payload.data.sessionToken);
+        localStorage.setItem('sessionId', action.payload.data.sessionId);
       })
       .addCase(session.rejected, () => {});
   },

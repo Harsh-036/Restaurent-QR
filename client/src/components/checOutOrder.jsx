@@ -28,12 +28,17 @@ useEffect(()=>{
       const options = {
         key: result.data.razorPayOrder.key,
         amount: result.data.razorPayOrder.amount,
+        order_id : result.data.order.razorPayOrderId,
         currency: "INR",
         name: "SavoryBites",
         description: "Test Transaction",
-        handler: function (response) {
+        handler: async function (response) {
             console.log(response)
             alert(`Payment ID: ${response.razorpay_payment_id}`);
+          //    const result = await api.post('v1/verify/payment', {paymentId : response.razorpay_payment_id , razorPayOrderId : response.razorpay_order_id , signature : response.razorpay_signature } );
+          // if(result.data.success){
+          //   toast.success('Payment Successfull' , 'order confirmed')
+          // }
         },
         prefill: {
             name: result.data.order.customerName,
@@ -56,7 +61,7 @@ useEffect(()=>{
       <h1>Razor pay </h1>
       <button
         onClick={handlePlaceOrder}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800/50 border border-gray-700/50 hover:bg-gray-800/70 transition-colors"
+        className="flex items-center mt-20 gap-2 px-3 py-2 rounded-lg bg-gray-800/50 border border-gray-700/50 hover:bg-gray-800/70 transition-colors"
       >
         Pay and Place Order
       </button>

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { loginUser, signupUser } from '../redux/authSlice';
+import { migrateCart } from '../redux/cartSlice';
 
 const Home = () => {
-  const [isSignup, setIsSignup] = useState(false);
+  const location = useLocation();
+  const [isSignup, setIsSignup] = useState(location.state?.showSignup || false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,10 +24,20 @@ const Home = () => {
       const message = isSignup ? "Signup successful!" : `Login successful! ${refreshTokenExpiry}`;
       alert(message);
       const userRole = localStorage.getItem('userRole');
-      const redirectPath = userRole === 'admin' ? '/dashboard' : '/';
-      navigate(redirectPath);
+      const redirectPath = userRole === 'admin' ? '/dashboard' : (location.state?.fromCart ? '/cart' : '/');
+
+      // If coming from cart (guest signup) or if sessionToken exists, dispatch migrateCart before navigating
+      const sessionToken = localStorage.getItem('sessionToken');
+      if ((location.state?.fromCart || sessionToken) && sessionToken) {
+        const sessionId = localStorage.getItem('sessionId');
+        dispatch(migrateCart({ sessionId })).then(() => {
+          navigate(redirectPath);
+        });
+      } else {
+        navigate(redirectPath);
+      }
     }
-  }, [isAuthenticated, navigate, isSignup, refreshTokenExpiry]);
+  }, [isAuthenticated, navigate, isSignup, refreshTokenExpiry, dispatch, location.state]);
 
   React.useEffect(() => {
     if (error) {

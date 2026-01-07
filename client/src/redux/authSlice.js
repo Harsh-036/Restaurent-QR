@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { act } from 'react';
+import { migrateCart } from './cartSlice';
 
 // Async thunk for login
 export const loginUser = createAsyncThunk(
@@ -137,10 +137,8 @@ const authSlice = createSlice({
         // Store user name and role in localStorage
         localStorage.setItem('userName', action.payload.user.name);
         localStorage.setItem('userRole', action.payload.user.role);
-        // Check if guest session token exists and remove it
-        if (localStorage.getItem('sessionToken')) {
-          localStorage.removeItem('sessionToken');
-        }
+        // Check if guest session token exists and migrate cart
+        // Note: Migration is handled in Home.jsx if fromCart
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -151,9 +149,18 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(signupUser.fulfilled, (state, action) => {
+        console.log(action.payload)
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.isAuthenticated = true;
+        state.refreshTokenExpiry = action.payload.refreshTokenExpiry;
+        localStorage.setItem('accessToken', action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        // Store user name and role in localStorage
+        localStorage.setItem('userName', action.payload.user.name);
+        localStorage.setItem('userRole', action.payload.user.role);
+        // Check if guest session token exists and migrate cart
+        // Note: Migration is handled in Home.jsx if fromCart
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.loading = false;
