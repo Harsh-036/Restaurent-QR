@@ -236,3 +236,17 @@
       METHOD: POST
       IP: ::1
     
+2026-01-07 14:42:13 | ERROR | 
+      STATUS: 500
+      MESSAGE: crypto.createHmac is not a function
+      URL: /api/verify/payment
+      METHOD: POST
+      IP: ::1
+    
+2026-01-07 14:43:56 | ERROR | 
+      STATUS: 500
+      MESSAGE: Order validation failed: paymentStatus: `confirmed` is not a valid enum value for path `paymentStatus`.
+      URL: /api/verify/payment
+      METHOD: POST
+      IP: ::1
+    

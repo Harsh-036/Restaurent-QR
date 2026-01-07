@@ -78,6 +78,31 @@ export const updateUser = createAsyncThunk(
   }
 );
 
+// Async thunk for get user
+export const getUser = createAsyncThunk(
+  'auth/getUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch('http://localhost:3000/api/user', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Get user failed');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 // Async thunk for delete user
 export const deleteUser = createAsyncThunk(
   'auth/deleteUser',
@@ -203,6 +228,23 @@ const authSlice = createSlice({
         localStorage.removeItem('sessionToken');
       })
       .addCase(deleteUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        // Update localStorage
+        localStorage.setItem('userName', action.payload.user.name);
+        localStorage.setItem('userEmail', action.payload.user.email);
+        localStorage.setItem('userPhone', action.payload.user.phone);
+        localStorage.setItem('userRole', action.payload.user.role);
+      })
+      .addCase(getUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

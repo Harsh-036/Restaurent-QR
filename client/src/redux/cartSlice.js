@@ -176,6 +176,59 @@ export const migrateCart = createAsyncThunk(
   }
 );
 
+// Async thunk for placing order
+export const placeOrder = createAsyncThunk(
+  'cart/placeOrder',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const token =
+        localStorage.getItem('accessToken') ||
+        localStorage.getItem('sessionToken');
+
+      if (!token) throw new Error('No authentication token found');
+
+      const response = await fetch('http://localhost:3000/api/orders', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Async thunk for verifying payment
+export const verifyPayment = createAsyncThunk(
+  'cart/verifyPayment',
+  async ({ paymentId, razorPayOrderId, signature }, { rejectWithValue }) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/verify/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paymentId, razorPayOrderId, signature }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState: {
@@ -252,6 +305,30 @@ const cartSlice = createSlice({
         localStorage.removeItem('sessionId');
       })
       .addCase(migrateCart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(placeOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(placeOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        // Optionally clear cart or update state
+      })
+      .addCase(placeOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(verifyPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyPayment.fulfilled, (state, action) => {
+        state.loading = false;
+        // Handle successful payment verification
+      })
+      .addCase(verifyPayment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

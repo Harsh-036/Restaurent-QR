@@ -1,8 +1,10 @@
-import User from '../models/user.js';
-import Cart from '../models/cart.js';
-import Coupan from '../models/coupan.js';
-import Order from '../models/order.js';
-import razorpay from '../config/razorpay.js';
+import User from "../models/user.js";
+import Cart from "../models/cart.js";
+import Coupan from "../models/coupan.js";
+import Order from "../models/order.js";
+import razorpay from "../config/razorpay.js";
+import crypto from 'crypto';
+
 const calculateOrderNumber = () => {
   const date = Date.now();
   const randomNumber = Math.floor(Math.random() * 10000000);
@@ -20,7 +22,7 @@ export const createOrder = async (req, res, next) => {
     paymentMethod,
   } = req.body;
   if (!tableNumber) {
-    const error = new Error('No table Found');
+    const error = new Error("No table Found");
     error.status = 404;
     throw error;
   }
@@ -33,7 +35,7 @@ export const createOrder = async (req, res, next) => {
     const user = await User.findById(userId);
     console.log(user);
     const cartItems = await Cart.findOne({ userId }).populate(
-      'items.menuItemId'
+      "items.menuItemId"
     );
     const orderItems = [];
 
@@ -61,7 +63,22 @@ export const createOrder = async (req, res, next) => {
     //NOTE calculate discount amount and cross verfiy the coupan
     const coupan = await Coupan.findOne({ code: coupanCode, isActive: true });
 
-    //result discountAmount ?
+    let discountAmount = 0;
+    if (coupan) {
+      if (coupan.discountType === 'percentage') {
+        discountAmount = (subTotal * coupan.discountValue) / 100;
+        if (coupan.maxDiscount && discountAmount > coupan.maxDiscount) {
+          discountAmount = coupan.maxDiscount;
+        }
+      } else if (coupan.discountType === 'fixedAmount') {
+        discountAmount = coupan.discountValue;
+      }
+    }
+
+    const discountedTotal = subTotal - discountAmount;
+    const gst = Math.round(discountedTotal * 0.18);
+    const finalAmount = discountedTotal + gst;
+
     const orderNumber = calculateOrderNumber();
 
     const dataOfOrder = {
@@ -70,6 +87,8 @@ export const createOrder = async (req, res, next) => {
       sessionToken: null,
       items: orderItems,
       subTotal,
+      discountAmount,
+      finalAmount,
       coupanCode,
       tableNumber,
       customerEmail,
@@ -79,19 +98,19 @@ export const createOrder = async (req, res, next) => {
       notes,
     };
 
-    if (paymentMethod === 'cash') {
+    if (paymentMethod === "cash") {
       const order = await Order.create(dataOfOrder);
-    return   res.status(201).json({
-        message: 'Order Placed Successfully',
+      return res.status(201).json({
+        message: "Order Placed Successfully",
         data: order,
       });
     }
 
-    if (paymentMethod === 'razorpay') {
-      console.log('this is runnnnnnnnnnnnnnnning')
+    if (paymentMethod === "razorpay") {
+      console.log("this is runnnnnnnnnnnnnnnning");
       const options = {
-        amount: subTotal,
-        currency: 'INR',
+        amount: finalAmount * 100,
+        currency: "INR",
         receipt: orderNumber,
         notes: {
           customerEmail,
@@ -99,9 +118,14 @@ export const createOrder = async (req, res, next) => {
           customerName,
         },
       };
-      const order = await razorpay.orders.create(options);
-      console.log(order)
-  return    res.json(order);
+      const razorpayOrder = await razorpay.orders.create(options);
+      console.log(razorpayOrder);
+      dataOfOrder.razorPayOrderId = razorpayOrder.id;
+      const order = await Order.create(dataOfOrder);
+      return res.json({
+        order,
+        razorPayOrder: { ...razorpayOrder, key: process.env.RAZORPAY_API_KEY },
+      });
     }
 
     user.totalOrders += 1;
@@ -156,3 +180,43 @@ export const createOrder = async (req, res, next) => {
 
 // myorder => shirt , jeans => shirt => 2 => 500
 // shirt + jeans => subtotal
+
+export const verifyPayment = async (req, res, next) => {
+  try {
+    const { paymentId, signature, razorPayOrderId } = req.body;
+    const order = await Order.findOne({ razorPayOrderId });
+    if (!order) {
+      const error = new Error("order not found");
+      throw error;
+    }
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
+      .update(razorPayOrderId + "|" + paymentId)
+      .digest("hex");
+
+    if (generated_signature !== signature) {
+      res
+        .status(400)
+        .json({ success: false, message: "Payment verification failed!" });
+    }
+
+    const payment = await razorpay.payments.fetch(paymentId);
+    console.log(payment);
+
+    if (payment.status === "captured" || payment.status === "authorized") {
+      order.paymentStatus = "confirmed";
+      order.razorPaySignature = signature;
+      order.razorPayPaymentId = paymentId;
+      await order.save();
+    } else if (payment.status === "failed") {
+      order.paymentStatus = "failed";
+      await order.save();
+    }
+    res.status(200).json({
+      success: true,
+      message: "Payment Verified",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

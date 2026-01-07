@@ -2,17 +2,27 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Trash2, Plus, Minus, ShoppingBag, ChevronDown, ChevronUp } from "lucide-react";
-import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem, increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic } from "../redux/cartSlice";
+import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem, increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic, placeOrder, verifyPayment } from "../redux/cartSlice";
 import { getCoupons } from "../redux/couponSlice";
+import { getUser } from "../redux/authSlice";
 
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { cart, loading, error } = useSelector((state) => state.cart);
   const { coupons, loading: couponLoading } = useSelector((state) => state.coupon);
+  const { user } = useSelector((state) => state.auth);
 
   const [showCoupons, setShowCoupons] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [customerDetails, setCustomerDetails] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    tableNumber: 1,
+    notes: ''
+  });
+
 
   const cartItems = cart?.items || [];
 
@@ -47,6 +57,91 @@ const Cart = () => {
       dispatch(getCoupons(totalPrice));
     }
   }, [totalPrice, dispatch, userRole]);
+
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
+  // Fetch user data on component mount for logged-in users
+  useEffect(() => {
+    if (userRole !== 'guest') {
+      dispatch(getUser());
+    }
+  }, [dispatch, userRole]);
+
+  // Update customer details when user data is available
+  useEffect(() => {
+    if (user) {
+      setCustomerDetails(prev => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+      }));
+    }
+  }, [user]);
+
+  const handlePlaceOrder = async () => {
+    if (!customerDetails.name || !customerDetails.email || !customerDetails.phone) {
+      alert("Please fill in all required details.");
+      return;
+    }
+
+    const payload = {
+      coupanCode: appliedCoupon?.code || '',
+      tableNumber: customerDetails.tableNumber,
+      customerEmail: customerDetails.email,
+      customerName: customerDetails.name,
+      customerPhone: customerDetails.phone,
+      notes: customerDetails.notes,
+      paymentMethod: 'razorpay',
+    };
+
+    try {
+      const result = await dispatch(placeOrder(payload)).unwrap();
+      console.log(result);
+
+      const options = {
+        key: result.razorPayOrder.key,
+        amount: result.razorPayOrder.amount,
+        order_id: result.order.razorPayOrderId,
+        currency: "INR",
+        name: "Restaurant QR",
+        description: "Test Transaction",
+        handler: async function (response) {
+          console.log(response);
+          alert(`Payment ID: ${response.razorpay_payment_id}`);
+          const verifyResult = await dispatch(verifyPayment({
+            paymentId: response.razorpay_payment_id,
+            razorPayOrderId: response.razorpay_order_id,
+            signature: response.razorpay_signature
+          })).unwrap();
+          if (verifyResult.success) {
+            alert("Order successful!");
+            navigate('/orders'); // Navigate to orders page or success page
+          }
+        },
+        prefill: {
+          name: customerDetails.name,
+          email: customerDetails.email,
+          contact: customerDetails.phone
+        },
+        theme: {
+          color: "#1e2939"
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to place order. Please try again.");
+    }
+  };
 
   if (loading) {
     return (
@@ -285,10 +380,10 @@ const Cart = () => {
             </button>
           ) : (
             <button
-              onClick={() => navigate('/checkout')}
-              className="w-full mt-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
+              onClick={handlePlaceOrder}
+              className="w-full mt-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition"
             >
-              Proceed to Checkout
+              Pay and Place Order
             </button>
           )}
 

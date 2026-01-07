@@ -292,6 +292,20 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+// GET USER
+export const getUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId).select('-passwordHash -refreshToken -refreshTokenExpiresTime -resetToken -resetTokenExpiry');
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 // FORGET PASSWORD (Update Password)
 export const forgetPassword = async (req, res) => {
   try {
