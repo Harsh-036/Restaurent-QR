@@ -129,12 +129,18 @@ const Main = () => {
                       {item.description}
                     </p>
 
-                    <button
-                      onClick={() => dispatch(addToCart({ menuItemId: item._id, quantity: 1 }))}
-                      className="w-full mt-3 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition"
-                    >
-                      Add to Cart
-                    </button>
+                    {item.isAvailable ? (
+                      <button
+                        onClick={() => dispatch(addToCart({ menuItemId: item._id, quantity: 1 }))}
+                        className="w-full mt-3 px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition"
+                      >
+                        Add to Cart
+                      </button>
+                    ) : (
+                      <div className="w-full mt-3 px-4 py-2 bg-gray-600 text-gray-300 rounded-lg font-medium text-center">
+                        Currently Unavailable
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

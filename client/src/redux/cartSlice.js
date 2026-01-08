@@ -326,7 +326,8 @@ const cartSlice = createSlice({
       })
       .addCase(verifyPayment.fulfilled, (state, action) => {
         state.loading = false;
-        // Handle successful payment verification
+        // Clear the cart after successful payment verification
+        state.cart = null;
       })
       .addCase(verifyPayment.rejected, (state, action) => {
         state.loading = false;

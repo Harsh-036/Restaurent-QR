@@ -130,9 +130,6 @@ export const createOrder = async (req, res, next) => {
 
     user.totalOrders += 1;
     await user.save();
-    cartItems.items = [];
-    cartItems.totalCartPrice = 0;
-    await cartItems.save();
 
     res.json({ cartItems, orderItems, coupan });
   } catch (error) {
@@ -208,6 +205,14 @@ export const verifyPayment = async (req, res, next) => {
       order.razorPaySignature = signature;
       order.razorPayPaymentId = paymentId;
       await order.save();
+
+      // Clear the cart after successful payment
+      const cart = await Cart.findOne({ userId: order.userId });
+      if (cart) {
+        cart.items = [];
+        cart.totalCartPrice = 0;
+        await cart.save();
+      }
     } else if (payment.status === "failed") {
       order.paymentStatus = "failed";
       await order.save();

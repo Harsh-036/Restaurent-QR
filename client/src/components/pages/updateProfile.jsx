@@ -77,7 +77,7 @@ export default function UpdateProfile() {
 
   return (
     <div className="min-h-screen flex items-center justify-center 
-      bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] px-4 py-8">
+      bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] mt-20 px-4 py-8">
 
       <div className="bg-white/10 backdrop-blur-2xl border border-white/20 
         rounded-3xl shadow-2xl p-10 w-full max-w-lg text-white">
