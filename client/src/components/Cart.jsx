@@ -5,6 +5,8 @@ import { Trash2, Plus, Minus, ShoppingBag, ChevronDown, ChevronUp } from "lucide
 import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem, increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic, placeOrder, verifyPayment } from "../redux/cartSlice";
 import { getCoupons } from "../redux/couponSlice";
 import { getUser } from "../redux/authSlice";
+import socketService from "../lib/socket";
+import toast from "react-hot-toast";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -85,9 +87,40 @@ const Cart = () => {
     }
   }, [user]);
 
+  // WebSocket connection and event listeners for coupons
+  useEffect(() => {
+    socketService.connect();
+
+    // Listen for coupon events to refresh coupons
+    socketService.onCouponCreated(() => {
+      if (totalPrice > 0 && userRole !== 'guest') {
+        dispatch(getCoupons(totalPrice));
+      }
+    });
+
+    socketService.onCouponUpdated(() => {
+      if (totalPrice > 0 && userRole !== 'guest') {
+        dispatch(getCoupons(totalPrice));
+      }
+    });
+
+    socketService.onCouponDeleted(() => {
+      if (totalPrice > 0 && userRole !== 'guest') {
+        dispatch(getCoupons(totalPrice));
+      }
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socketService.off('coupon:created');
+      socketService.off('coupon:updated');
+      socketService.off('coupon:deleted');
+    };
+  }, [dispatch, totalPrice, userRole]);
+
   const handlePlaceOrder = async () => {
     if (!customerDetails.name || !customerDetails.email || !customerDetails.phone) {
-      alert("Please fill in all required details.");
+      toast.error("Please fill in all required details.");
       return;
     }
 
@@ -114,14 +147,14 @@ const Cart = () => {
         description: "Test Transaction",
         handler: async function (response) {
           console.log(response);
-          alert(`Payment ID: ${response.razorpay_payment_id}`);
+          toast.success(`Payment ID: ${response.razorpay_payment_id}`);
           const verifyResult = await dispatch(verifyPayment({
             paymentId: response.razorpay_payment_id,
             razorPayOrderId: response.razorpay_order_id,
             signature: response.razorpay_signature
           })).unwrap();
           if (verifyResult.success) {
-            alert("Order successful!");
+            toast.success("Order successful!");
             navigate('/orders'); // Navigate to orders page or success page
           }
         },
@@ -139,7 +172,7 @@ const Cart = () => {
       razorpay.open();
     } catch (error) {
       console.error(error);
-      alert("Failed to place order. Please try again.");
+      toast.error("Failed to place order. Please try again.");
     }
   };
 

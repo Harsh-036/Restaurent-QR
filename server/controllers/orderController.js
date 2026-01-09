@@ -100,6 +100,11 @@ export const createOrder = async (req, res, next) => {
 
     if (paymentMethod === "cash") {
       const order = await Order.create(dataOfOrder);
+
+      // Emit WebSocket event for real-time updates
+      const io = req.app.get('io');
+      io.emit('order:created', order);
+
       return res.status(201).json({
         message: "Order Placed Successfully",
         data: order,
@@ -122,6 +127,11 @@ export const createOrder = async (req, res, next) => {
       console.log(razorpayOrder);
       dataOfOrder.razorPayOrderId = razorpayOrder.id;
       const order = await Order.create(dataOfOrder);
+
+      // Emit WebSocket event for real-time updates
+      const io = req.app.get('io');
+      io.emit('order:created', order);
+
       return res.json({
         order,
         razorPayOrder: { ...razorpayOrder, key: process.env.RAZORPAY_API_KEY },
@@ -220,6 +230,65 @@ export const verifyPayment = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Payment Verified",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find({})
+      .populate('userId', 'name email')
+      .sort({ createdAt: -1 }); // Sort by newest first
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserOrders = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const orders = await Order.find({ userId })
+      .sort({ createdAt: -1 }); // Sort by newest first
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateOrderStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { orderStatus: status },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('order:statusUpdated', updatedOrder);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order status updated successfully',
+      data: updatedOrder,
     });
   } catch (error) {
     next(error);

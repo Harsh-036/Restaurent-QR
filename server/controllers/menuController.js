@@ -19,6 +19,10 @@ export const createMenu = async (req, res) => {
       image: result.secure_url,
     });
 
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('menu:created', menuItem);
+
     res.status(201).json({
       data: menuItem,
       message: 'New menu item added',
@@ -95,6 +99,10 @@ export const updateMenu = async (req, res) => {
       return res.status(404).json({ message: 'Menu item not found' });
     }
 
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('menu:updated', updatedMenu);
+
     res.status(200).json({
       data: updatedMenu,
       message: 'Menu updated successfully',
@@ -117,6 +125,10 @@ export const deleteMenu = async (req, res) => {
     if (!deletedMenu) {
       return res.status(404).json({ message: 'Menu item not found' });
     }
+
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('menu:deleted', deletedMenu._id);
 
     res.status(200).json({
       message: 'Menu item deleted successfully',
@@ -143,6 +155,10 @@ export const toggleAvailability = async (req, res) => {
 
     menuItem.isAvailable = !menuItem.isAvailable;
     await menuItem.save();
+
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('menu:availabilityChanged', menuItem);
 
     return res.status(200).json({
       message: "Availability toggled successfully",

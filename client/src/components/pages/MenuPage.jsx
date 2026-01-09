@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { fetchMenu, createMenu, updateMenu, deleteMenu, toggleAvailability } from "../../redux/menuSlice";
+import { fetchMenu, createMenu, updateMenu, deleteMenu, toggleAvailability, addMenu, updateMenuAction, removeMenu, updateMenuAvailability } from "../../redux/menuSlice";
 import Sidebar from "../Sidebar";
+import socketService from "../../lib/socket";
 
 const MenuPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,36 @@ const MenuPage = () => {
   useEffect(() => {
     dispatch(fetchMenu({ page: currentPage, category: selectedCategory }));
   }, [dispatch, currentPage, selectedCategory]);
+
+  // WebSocket connection and event listeners
+  useEffect(() => {
+    socketService.connect();
+
+    // Listen for menu events
+    socketService.onMenuCreated((newMenu) => {
+      dispatch(addMenu(newMenu));
+    });
+
+    socketService.onMenuUpdated((updatedMenu) => {
+      dispatch(updateMenuAction(updatedMenu));
+    });
+
+    socketService.onMenuDeleted((deletedMenuId) => {
+      dispatch(removeMenu(deletedMenuId));
+    });
+
+    socketService.onMenuAvailabilityChanged((updatedMenu) => {
+      dispatch(updateMenuAvailability(updatedMenu));
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socketService.off('menu:created');
+      socketService.off('menu:updated');
+      socketService.off('menu:deleted');
+      socketService.off('menu:availabilityChanged');
+    };
+  }, [dispatch]);
 
   // Use categories from Redux
   const categories = allCategories;

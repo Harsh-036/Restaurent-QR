@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { loginUser, signupUser } from '../redux/authSlice';
 import { migrateCart } from '../redux/cartSlice';
+import toast from 'react-hot-toast';
 
 const Home = () => {
   const location = useLocation();
@@ -22,7 +23,7 @@ const Home = () => {
   React.useEffect(() => {
     if (isAuthenticated && refreshTokenExpiry) {
       const message = isSignup ? "Signup successful!" : `Login successful! ${refreshTokenExpiry}`;
-      alert(message);
+      toast.success(message);
       const userRole = localStorage.getItem('userRole');
       const redirectPath = userRole === 'admin' ? '/dashboard' : (location.state?.fromCart ? '/cart' : '/');
 
@@ -41,7 +42,7 @@ const Home = () => {
 
   React.useEffect(() => {
     if (error) {
-      alert(
+      toast.error(
         isSignup
           ? "Signup failed. Please re-enter details."
           : "Login failed. Please re-enter email and password."

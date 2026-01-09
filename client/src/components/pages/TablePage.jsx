@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTables, createTable, updateTable, toggleTableStatus, deleteTable } from '../../redux/tableSlice';
+import { fetchTables, createTable, updateTable as updateTableThunk, toggleTableStatus, deleteTable, addTable, updateTableAction, removeTable, updateTableStatus } from '../../redux/tableSlice';
 import Sidebar from '../Sidebar';
+import socketService from "../../lib/socket";
+
 
 const TablePage = () => {
   const navigate = useNavigate();
@@ -17,6 +19,36 @@ const TablePage = () => {
     dispatch(fetchTables());
   }, [dispatch]);
 
+  // WebSocket connection and event listeners
+  useEffect(() => {
+    socketService.connect();
+
+    // Listen for table events
+    socketService.onTableCreated((newTable) => {
+      dispatch(addTable(newTable));
+    });
+
+    socketService.onTableUpdated((updatedTable) => {
+      dispatch(updateTableAction(updatedTable));
+    });
+
+    socketService.onTableDeleted((deletedTableId) => {
+      dispatch(removeTable(deletedTableId));
+    });
+
+    socketService.onTableStatusChanged((updatedTable) => {
+      dispatch(updateTableStatus(updatedTable));
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socketService.off('table:created');
+      socketService.off('table:updated');
+      socketService.off('table:deleted');
+      socketService.off('table:statusChanged');
+    };
+  }, [dispatch]);
+
   const getStatusColor = (isActive) => {
     return isActive ? 'text-green-400' : 'text-red-400';
   };
@@ -29,7 +61,7 @@ const TablePage = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      await dispatch(updateTable({ id: editingTable, ...editForm })).unwrap();
+      await dispatch(updateTableThunk({ id: editingTable, ...editForm })).unwrap();
       setEditingTable(null);
       setEditForm({ tableNumber: '', capacity: '' });
       dispatch(fetchTables()); // Refresh the list

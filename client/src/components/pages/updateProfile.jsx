@@ -3,6 +3,7 @@ import { Eye, EyeOff, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser, deleteUser } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function UpdateProfile() {
   const dispatch = useDispatch();
@@ -50,9 +51,9 @@ export default function UpdateProfile() {
 
     try {
       await dispatch(updateUser({ id: userId, ...updateData })).unwrap();
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
     } catch (error) {
-      alert("Failed to update profile: " + error);
+      toast.error("Failed to update profile: " + error);
     }
   };
 
@@ -68,10 +69,10 @@ export default function UpdateProfile() {
 
     try {
       await dispatch(deleteUser(userId)).unwrap();
-      alert("Account deleted successfully!");
+      toast.success("Account deleted successfully!");
       navigate("/login"); // Redirect to login page
     } catch (error) {
-      alert("Failed to delete account: " + error);
+      toast.error("Failed to delete account: " + error);
     }
   };
 

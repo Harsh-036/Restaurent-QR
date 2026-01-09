@@ -154,7 +154,21 @@ const couponSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    // Real-time coupon updates
+    addCoupon: (state, action) => {
+      state.coupons.unshift(action.payload);
+    },
+    updateCouponAction: (state, action) => {
+      const index = state.coupons.findIndex(coupon => coupon._id === action.payload._id);
+      if (index !== -1) {
+        state.coupons[index] = action.payload;
+      }
+    },
+    removeCoupon: (state, action) => {
+      state.coupons = state.coupons.filter(coupon => coupon._id !== action.payload);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getCoupons.pending, (state) => {
@@ -229,5 +243,7 @@ const couponSlice = createSlice({
       });
   },
 });
+
+export const { addCoupon, updateCouponAction, removeCoupon } = couponSlice.actions;
 
 export default couponSlice.reducer;

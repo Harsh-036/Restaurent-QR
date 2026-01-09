@@ -248,7 +248,27 @@ const tableSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    // Real-time table updates
+    addTable: (state, action) => {
+      state.tables.push(action.payload);
+    },
+    updateTable: (state, action) => {
+      const index = state.tables.findIndex(table => table._id === action.payload._id);
+      if (index !== -1) {
+        state.tables[index] = action.payload;
+      }
+    },
+    removeTable: (state, action) => {
+      state.tables = state.tables.filter(table => table._id !== action.payload);
+    },
+    updateTableStatus: (state, action) => {
+      const index = state.tables.findIndex(table => table._id === action.payload._id);
+      if (index !== -1) {
+        state.tables[index].isActive = action.payload.isActive;
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createTable.pending, (state) => {
@@ -319,5 +339,7 @@ const tableSlice = createSlice({
       });
   },
 });
+
+export const { addTable, updateTable: updateTableAction, removeTable, updateTableStatus } = tableSlice.actions;
 
 export default tableSlice.reducer;

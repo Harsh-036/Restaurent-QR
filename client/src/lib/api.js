@@ -25,7 +25,7 @@ console.log(error.config)
     if (error.response.status === 401) {
       try {
         const response = await axios.post(
-          'http://localhost:3000/api/v1/auth/refresh',
+          'http://localhost:3000/api/refresh-token',
           { refreshToken: localStorage.getItem('refreshToken') }
         );
         console.log('token' ,response.data.accessToken);

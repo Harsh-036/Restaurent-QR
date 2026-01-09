@@ -52,6 +52,10 @@ console.log("Using IP:", ipAddress);
       });
       await table.save();
 
+      // Emit WebSocket event for real-time updates
+      const io = req.app.get('io');
+      io.emit('table:created', table);
+
       res.status(201).json({
         success: true,
         data: table,
@@ -120,6 +124,10 @@ export const updateTable = async (req, res, next) => {
       throw error;
     }
 
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('table:updated', updatedTable);
+
     successResponse(res, 200, updatedTable);
   } catch (error) {
     next(error);
@@ -141,6 +149,10 @@ export const toggleTableStatus = async (req, res, next) => {
     table.isActive = !table.isActive;
     await table.save();
 
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('table:statusChanged', table);
+
     successResponse(res, 200, table);
   } catch (error) {
     next(error);
@@ -158,6 +170,10 @@ export const deleteTable = async (req, res, next) => {
       error.status = 404;
       throw error;
     }
+
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('table:deleted', { id: deletedTable._id });
 
     successResponse(res, 200, { message: "Table deleted successfully" });
   } catch (error) {

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getAllCoupons, createCoupon, updateCoupon, deleteCoupon } from '../../redux/couponSlice';
+import { getAllCoupons, createCoupon, updateCoupon, deleteCoupon, addCoupon, updateCouponAction, removeCoupon } from '../../redux/couponSlice';
 import Sidebar from '../Sidebar';
+import socketService from '../../lib/socket';
+
 
 const CouponsPage = () => {
   const dispatch = useDispatch();
@@ -23,6 +25,31 @@ const CouponsPage = () => {
 
   useEffect(() => {
     dispatch(getAllCoupons());
+  }, [dispatch]);
+
+  // WebSocket connection and event listeners
+  useEffect(() => {
+    socketService.connect();
+
+    // Listen for coupon events
+    socketService.onCouponCreated((newCoupon) => {
+      dispatch(addCoupon(newCoupon));
+    });
+
+    socketService.onCouponUpdated((updatedCoupon) => {
+      dispatch(updateCouponAction(updatedCoupon));
+    });
+
+    socketService.onCouponDeleted((deletedCouponId) => {
+      dispatch(removeCoupon(deletedCouponId));
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socketService.off('coupon:created');
+      socketService.off('coupon:updated');
+      socketService.off('coupon:deleted');
+    };
   }, [dispatch]);
 
   const handleInputChange = (e) => {

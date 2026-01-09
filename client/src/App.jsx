@@ -14,6 +14,7 @@ import MenuPage from "./components/pages/MenuPage";
 import OrdersPage from "./components/pages/OrdersPage";
 import TablePage from "./components/pages/TablePage";
 import CouponsPage from "./components/pages/CouponsPage";
+import MyOrdersPage from "./components/pages/MyOrdersPage";
 
 const App = () => {
   return (
@@ -98,6 +99,15 @@ const App = () => {
             element={
               <ProtectRoute requiredRole="admin">
                 <CouponsPage />
+              </ProtectRoute>
+            }
+          />
+          {/* protected my orders page */}
+          <Route
+            path="/myorders"
+            element={
+              <ProtectRoute>
+                <MyOrdersPage />
               </ProtectRoute>
             }
           />

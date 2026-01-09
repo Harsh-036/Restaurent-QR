@@ -250,3 +250,17 @@
       METHOD: POST
       IP: ::1
     
+2026-01-10 01:30:19 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Order"
+      URL: /api/orders/undefined/status
+      METHOD: PATCH
+      IP: ::1
+    
+2026-01-10 01:30:33 | ERROR | 
+      STATUS: 500
+      MESSAGE: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Order"
+      URL: /api/orders/undefined/status
+      METHOD: PATCH
+      IP: ::1
+    

@@ -131,6 +131,10 @@ export const registerCoupan = async (req, res) => {
 
     const savedCoupan = await new Coupan(coupanData).save();
 
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('coupon:created', savedCoupan);
+
     res.status(201).json({
       message: 'Coupan created successfully',
       coupan: savedCoupan,
@@ -167,6 +171,10 @@ export const updateCoupan = async (req, res) => {
       return res.status(404).json({ message: 'Coupan not found' });
     }
 
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('coupon:updated', updatedCoupan);
+
     res.json({
       message: 'Coupan updated successfully',
       coupan: updatedCoupan,
@@ -187,6 +195,10 @@ export const deleteCoupan = async (req, res) => {
     if (!deletedCoupan) {
       return res.status(404).json({ message: 'Coupan not found' });
     }
+
+    // Emit WebSocket event for real-time updates
+    const io = req.app.get('io');
+    io.emit('coupon:deleted', deletedCoupan._id);
 
     res.json({
       message: 'Coupan deleted successfully',

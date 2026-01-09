@@ -137,7 +137,14 @@ const Navbar = () => {
               >
                 Update Profile
               </Link>
-
+              {userRole !== "admin" && (
+                <Link
+                  to="/myorders"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                >
+                  My Orders
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"

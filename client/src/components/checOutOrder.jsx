@@ -2,6 +2,7 @@ import React from 'react';
 import api from '../lib/api';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 function Checkout() {
 
   const cart = useSelector((state) => state.cart.cart);
@@ -43,10 +44,10 @@ useEffect(()=>{
         description: "Test Transaction",
         handler: async function (response) {
             console.log(response)
-            alert(`Payment ID: ${response.razorpay_payment_id}`);
+            toast.success(`Payment ID: ${response.razorpay_payment_id}`);
              const result = await api.post('verify/payment', {paymentId : response.razorpay_payment_id , razorPayOrderId : response.razorpay_order_id , signature : response.razorpay_signature } );
           if(result.data.success){
-            alert("order successfull")
+            toast.success("Order successful!")
           }
         },
         prefill: {

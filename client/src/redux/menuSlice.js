@@ -173,7 +173,29 @@ const menuSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    // Real-time menu updates
+    addMenu: (state, action) => {
+      state.items.unshift(action.payload);
+      state.totalItems += 1;
+    },
+    updateMenu: (state, action) => {
+      const index = state.items.findIndex(item => item._id === action.payload._id);
+      if (index !== -1) {
+        state.items[index] = action.payload;
+      }
+    },
+    removeMenu: (state, action) => {
+      state.items = state.items.filter(item => item._id !== action.payload);
+      state.totalItems -= 1;
+    },
+    updateMenuAvailability: (state, action) => {
+      const index = state.items.findIndex(item => item._id === action.payload._id);
+      if (index !== -1) {
+        state.items[index].isAvailable = action.payload.isAvailable;
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchMenu.pending, (state) => {
@@ -252,5 +274,7 @@ const menuSlice = createSlice({
       });
   },
 });
+
+export const { addMenu, updateMenu: updateMenuAction, removeMenu, updateMenuAvailability } = menuSlice.actions;
 
 export default menuSlice.reducer;

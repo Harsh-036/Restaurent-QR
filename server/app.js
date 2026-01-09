@@ -13,10 +13,43 @@ import dotenv from 'dotenv';
 import cartRoutes from './routes/cartRoutes.js'
 import allCoupans from './routes/coupanRoute.js'
 import orderRoutes from './routes/orderRoutes.js'
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 
 dotenv.config()
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
+  }
+});
+
+// WebSocket connection handling
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+
+  // Join user-specific room for personalized updates
+  socket.on('join-user-room', (userId) => {
+    socket.join(`user_${userId}`);
+    console.log(`User ${userId} joined their room`);
+  });
+
+  // Join admin room for admin-specific updates
+  socket.on('join-admin-room', () => {
+    socket.join('admin_room');
+    console.log('Admin joined admin room');
+  });
+});
+
+// Make io available to routes
+app.set('io', io);
 app.use(cors({
     origin: "http://localhost:5173"
 }))
@@ -61,6 +94,6 @@ app.use('/api', orderRoutes)
   })
 
 
-app.listen(3000, ()=>{
+server.listen(3000, ()=>{
     console.log('server is running on port: http://localhost:3000')
-}) 
+})
