@@ -15,8 +15,8 @@ const ProtectRoute = ({ children, requiredRole }) => {
     const token = accessToken || sessionToken;
 
     if (!token) {
-      // No token found, redirect to login
-      navigate('/login');
+      // No token found, redirect to welcome
+      navigate('/welcome');
       return;
     }
 
@@ -70,13 +70,13 @@ const ProtectRoute = ({ children, requiredRole }) => {
         }
         setIsAuthenticated(true);
       } catch (error) {
-        // Token is invalid, redirect to login
+        // Token is invalid, redirect to welcome
         console.error('Token validation failed:', error);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('sessionToken');
         localStorage.removeItem('userName');
         localStorage.removeItem('userRole');
-        navigate('/login');
+        navigate('/welcome');
       } finally {
         setLoading(false);
       }
@@ -90,12 +90,12 @@ const ProtectRoute = ({ children, requiredRole }) => {
         if (refreshed) {
           currentToken = localStorage.getItem('accessToken');
         } else {
-          // Refresh failed, redirect to login
+          // Refresh failed, redirect to welcome
           localStorage.removeItem('accessToken');
           localStorage.removeItem('sessionToken');
           localStorage.removeItem('userName');
           localStorage.removeItem('userRole');
-          navigate('/login');
+          navigate('/welcome');
           setLoading(false);
           return;
         }
