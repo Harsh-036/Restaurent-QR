@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import jwtConfig from "../config/jwt.js";
 import transporter from "../services/emailService.js";
 import registerTemplate from "../services/templates/registerTemplate.js";
+import admin from "../config/firebase.js";
 
 const generateTokens = (user) => {
   const accessToken = jwt.sign(
@@ -350,6 +351,69 @@ export const forgetPassword = async (req, res) => {
     if (error.name === 'TokenExpiredError') {
       return res.status(400).json({ message: "Token expired" });
     }
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// GOOGLE SIGN-IN
+export const googleSignIn = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ message: "ID token is required" });
+    }
+
+    // Verify the ID token with Firebase Admin SDK
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { uid, email, name, picture } = decodedToken;
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user
+      user = new User({
+        name: name || 'Google User',
+        email,
+        passwordHash: '', // No password for Google users
+        phone: null,
+        isActive: true,
+        role: 'user',
+      });
+      await user.save();
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // Calculate refresh token expiry time (7 days from now)
+    const refreshTokenExpiryTime = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000
+    );
+
+    user.refreshToken = refreshToken;
+    user.refreshTokenExpiresTime = refreshTokenExpiryTime;
+    await user.save();
+
+    // Calculate remaining time in days and hours
+    const now = new Date();
+    const timeDiff = refreshTokenExpiryTime - now;
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const expiryMessage = `Refresh token expires in ${days} days and ${hours} hours`;
+
+    res.json({
+      user,
+      accessToken,
+      refreshToken,
+      refreshTokenExpiry: expiryMessage,
+      message: "Google sign-in successful"
+    });
+  } catch (error) {
+    console.error('Google sign-in error:', error);
     res.status(500).json({ message: "Server error", error });
   }
 };

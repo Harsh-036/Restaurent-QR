@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
   PointElement,
+  Filler,
 } from "chart.js";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
 import { TrendingUp, Users, ShoppingCart, ChefHat, DollarSign, Clock, Star, Utensils } from "lucide-react";
@@ -21,7 +22,8 @@ ChartJS.register(
   ArcElement,
   Tooltip,
   Legend,
-  PointElement
+  PointElement,
+  Filler
 );
 
 const DashboardContent = () => {

@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, refreshToken, updateUser, deleteUser, findAccount, resetPassword, forgetPassword, getUser } from "../controllers/authControllers.js";
+import { register, login, refreshToken, updateUser, deleteUser, findAccount, resetPassword, forgetPassword, getUser, googleSignIn } from "../controllers/authControllers.js";
 import verifyToken from "../middleware/verifyToken.js";
 
 const router = express.Router();
@@ -13,5 +13,6 @@ router.delete("/delete-user/:id", verifyToken, deleteUser);
 router.post("/find-account", findAccount);
 router.post("/reset-password", resetPassword);
 router.post("/forget-password", forgetPassword);
+router.post("/google-signin", googleSignIn);
 
 export default router;

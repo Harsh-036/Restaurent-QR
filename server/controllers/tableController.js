@@ -35,7 +35,7 @@ console.log("Using IP:", ipAddress);
 
 
     //generate qr code url
-    const qrCodeURL = `http://${ipAddress}:5173/scan-qr?qr=${qrSlug}`;
+    const qrCodeURL = `http://${ipAddress}:5173/welcome?qr=${qrSlug}`;
     console.log(qrCodeURL);
 
     //embed this qrCodeURL with qrCode

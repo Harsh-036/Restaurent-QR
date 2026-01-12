@@ -128,6 +128,31 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
+// Async thunk for Google sign-in
+export const googleSignIn = createAsyncThunk(
+  'auth/googleSignIn',
+  async ({ idToken }, { rejectWithValue }) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/google-signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Google sign-in failed');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -188,6 +213,26 @@ const authSlice = createSlice({
         // Note: Migration is handled in Home.jsx if fromCart
       })
       .addCase(signupUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(googleSignIn.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleSignIn.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.refreshTokenExpiry = action.payload.refreshTokenExpiry;
+        localStorage.setItem('accessToken', action.payload.accessToken);
+        localStorage.setItem('refreshToken', action.payload.refreshToken);
+        // Store user name and role in localStorage
+        localStorage.setItem('userName', action.payload.user.name);
+        localStorage.setItem('userRole', action.payload.user.role);
+      })
+      .addCase(googleSignIn.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

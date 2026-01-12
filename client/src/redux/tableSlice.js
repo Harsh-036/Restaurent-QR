@@ -277,7 +277,7 @@ const tableSlice = createSlice({
       })
       .addCase(createTable.fulfilled, (state, action) => {
         state.loading = false;
-        state.tables.push(action.payload);
+        // Table is added via WebSocket event, no need to push here
       })
       .addCase(createTable.rejected, (state, action) => {
         state.loading = false;
