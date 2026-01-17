@@ -258,6 +258,9 @@ const cartSlice = createSlice({
         state.cart.items = state.cart.items.filter(item => item.menuItemId._id !== action.payload.menuItemId);
       }
     },
+    clearCart: (state) => {
+      state.cart = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -336,5 +339,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic } = cartSlice.actions;
+export const { increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;

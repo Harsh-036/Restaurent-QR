@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Trash2, Plus, Minus, ShoppingBag, ChevronDown, ChevronUp } from "lucide-react";
-import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem, increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic, placeOrder, verifyPayment } from "../redux/cartSlice";
+import { getCart, increaseItemQuantity, decreaseItemQuantity, removeItem, increaseQuantityOptimistic, decreaseQuantityOptimistic, removeItemOptimistic, placeOrder, verifyPayment, clearCart } from "../redux/cartSlice";
 import { getCoupons } from "../redux/couponSlice";
 import { getUser } from "../redux/authSlice";
 import socketService from "../lib/socket";
@@ -17,6 +17,7 @@ const Cart = () => {
 
   const [showCoupons, setShowCoupons] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [customerDetails, setCustomerDetails] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -118,7 +119,7 @@ const Cart = () => {
     };
   }, [dispatch, totalPrice, userRole]);
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (paymentMethod) => {
     if (!customerDetails.name || !customerDetails.email || !customerDetails.phone) {
       toast.error("Please fill in all required details.");
       return;
@@ -131,45 +132,53 @@ const Cart = () => {
       customerName: customerDetails.name,
       customerPhone: customerDetails.phone,
       notes: customerDetails.notes,
-      paymentMethod: 'razorpay',
+      paymentMethod,
     };
 
     try {
-      const result = await dispatch(placeOrder(payload)).unwrap();
-      console.log(result);
+      if (paymentMethod === 'cash') {
+        await dispatch(placeOrder(payload)).unwrap();
+        dispatch(clearCart());
+        toast.success("Order placed successfully!");
+        navigate('/orders');
+      } else if (paymentMethod === 'razorpay') {
+        const result = await dispatch(placeOrder(payload)).unwrap();
+        console.log(result);
 
-      const options = {
-        key: result.razorPayOrder.key,
-        amount: result.razorPayOrder.amount,
-        order_id: result.order.razorPayOrderId,
-        currency: "INR",
-        name: "Restaurant QR",
-        description: "Test Transaction",
-        handler: async function (response) {
-          console.log(response);
-          toast.success(`Payment ID: ${response.razorpay_payment_id}`);
-          const verifyResult = await dispatch(verifyPayment({
-            paymentId: response.razorpay_payment_id,
-            razorPayOrderId: response.razorpay_order_id,
-            signature: response.razorpay_signature
-          })).unwrap();
-          if (verifyResult.success) {
-            toast.success("Order successful!");
-            navigate('/orders'); // Navigate to orders page or success page
+        const options = {
+          key: result.razorPayOrder.key,
+          amount: result.razorPayOrder.amount,
+          order_id: result.order.razorPayOrderId,
+          currency: "INR",
+          name: "Restaurant QR",
+          description: "Test Transaction",
+          handler: async function (response) {
+            console.log(response);
+            toast.success(`Payment ID: ${response.razorpay_payment_id}`);
+            const verifyResult = await dispatch(verifyPayment({
+              paymentId: response.razorpay_payment_id,
+              razorPayOrderId: response.razorpay_order_id,
+              signature: response.razorpay_signature
+            })).unwrap();
+            if (verifyResult.success) {
+              dispatch(clearCart());
+              toast.success("Order successful!");
+              navigate('/orders'); // Navigate to orders page or success page
+            }
+          },
+          prefill: {
+            name: customerDetails.name,
+            email: customerDetails.email,
+            contact: customerDetails.phone
+          },
+          theme: {
+            color: "#1e2939"
           }
-        },
-        prefill: {
-          name: customerDetails.name,
-          email: customerDetails.email,
-          contact: customerDetails.phone
-        },
-        theme: {
-          color: "#1e2939"
-        }
-      };
+        };
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to place order. Please try again.");
@@ -413,7 +422,7 @@ const Cart = () => {
             </button>
           ) : (
             <button
-              onClick={handlePlaceOrder}
+              onClick={() => setShowPaymentModal(true)}
               className="w-full mt-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition"
             >
               Pay and Place Order
@@ -428,6 +437,41 @@ const Cart = () => {
           </button>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-semibold text-white mb-4">Choose Payment Method</h3>
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  handlePlaceOrder('cash');
+                }}
+                className="w-full py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition"
+              >
+                Pay with Cash
+              </button>
+              <button
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  handlePlaceOrder('razorpay');
+                }}
+                className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
+              >
+                Pay Online (Razorpay)
+              </button>
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="w-full py-3 border border-white/20 text-white rounded-xl hover:bg-white/10 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

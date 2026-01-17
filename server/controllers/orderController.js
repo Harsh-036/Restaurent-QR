@@ -2,6 +2,7 @@ import User from "../models/user.js";
 import Cart from "../models/cart.js";
 import Coupan from "../models/coupan.js";
 import Order from "../models/order.js";
+import Session from "../models/session.js";
 import razorpay from "../config/razorpay.js";
 import crypto from 'crypto';
 
@@ -27,14 +28,22 @@ export const createOrder = async (req, res, next) => {
     throw error;
   }
   try {
-    let userId;
-    if (req.user) {
+    let userId = null;
+    let sessionToken = null;
+    let cartQuery = {};
+
+    if (req.authType === 'user') {
       userId = req.user.id;
+      cartQuery = { userId };
+    } else if (req.authType === 'guest') {
+      sessionToken = req.session.sessionToken;
+      cartQuery = { sessionId: req.session._id };
     }
-    console.log(userId);
-    const user = await User.findById(userId);
+
+    console.log(userId, sessionToken);
+    const user = userId ? await User.findById(userId) : null;
     console.log(user);
-    const cartItems = await Cart.findOne({ userId }).populate(
+    const cartItems = await Cart.findOne(cartQuery).populate(
       "items.menuItemId"
     );
     const orderItems = [];
@@ -84,7 +93,7 @@ export const createOrder = async (req, res, next) => {
     const dataOfOrder = {
       orderNumber,
       userId,
-      sessionToken: null,
+      sessionToken,
       items: orderItems,
       subTotal,
       discountAmount,
@@ -100,6 +109,14 @@ export const createOrder = async (req, res, next) => {
 
     if (paymentMethod === "cash") {
       const order = await Order.create(dataOfOrder);
+
+      // Clear the cart after successful order placement
+      const cart = await Cart.findOne(cartQuery);
+      if (cart) {
+        cart.items = [];
+        cart.totalCartPrice = 0;
+        await cart.save();
+      }
 
       // Emit WebSocket event for real-time updates
       const io = req.app.get('io');
@@ -217,7 +234,16 @@ export const verifyPayment = async (req, res, next) => {
       await order.save();
 
       // Clear the cart after successful payment
-      const cart = await Cart.findOne({ userId: order.userId });
+      let cartQuery = {};
+      if (order.userId) {
+        cartQuery = { userId: order.userId };
+      } else {
+        const session = await Session.findOne({ sessionToken: order.sessionToken });
+        if (session) {
+          cartQuery = { sessionId: session._id };
+        }
+      }
+      const cart = await Cart.findOne(cartQuery);
       if (cart) {
         cart.items = [];
         cart.totalCartPrice = 0;

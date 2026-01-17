@@ -13,6 +13,7 @@ import dotenv from 'dotenv';
 import cartRoutes from './routes/cartRoutes.js'
 import allCoupans from './routes/coupanRoute.js'
 import orderRoutes from './routes/orderRoutes.js'
+import dashboardRoutes from './routes/dashboardRoutes.js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
@@ -85,6 +86,7 @@ app.use('/api' , menuRoutes)
 app.use('/api' , cartRoutes)
 app.use('/api' , allCoupans)
 app.use('/api', orderRoutes)
+app.use('/api', dashboardRoutes)
 
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{

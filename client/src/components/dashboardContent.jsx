@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { Bar, Line, Doughnut } from "react-chartjs-2";
 import { TrendingUp, Users, ShoppingCart, ChefHat, DollarSign, Clock, Star, Utensils } from "lucide-react";
+import { getDashboardData } from "../lib/api";
 
 ChartJS.register(
   CategoryScale,
@@ -27,12 +28,37 @@ ChartJS.register(
 );
 
 const DashboardContent = () => {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getDashboardData();
+        setDashboardData(data.data);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div className="text-white text-center">Loading...</div>;
+  }
+
+  if (!dashboardData) {
+    return <div className="text-white text-center">Failed to load data</div>;
+  }
+
   const revenueData = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
       {
         label: "Revenue ₹",
-        data: [4200, 3800, 5200, 6100, 7500, 8900, 6400],
+        data: dashboardData.weeklyRevenue,
         backgroundColor: "rgba(99, 102, 241, 0.1)",
         borderColor: "#6366f1",
         borderWidth: 3,
@@ -51,11 +77,11 @@ const DashboardContent = () => {
     labels: ["Dine-In", "Online Orders", "Takeaway"],
     datasets: [
       {
-        data: [45, 35, 20],
+        data: dashboardData.orderDistribution,
         backgroundColor: [
-          "linear-gradient(135deg, #22c55e, #16a34a)",
-          "linear-gradient(135deg, #6366f1, #4f46e5)",
-          "linear-gradient(135deg, #ffffff, #d97706)"
+          "#22c55e",
+          "#6366f1",
+          "#d97706"
         ],
         borderWidth: 0,
         hoverBorderWidth: 2,
@@ -65,11 +91,11 @@ const DashboardContent = () => {
   };
 
   const topItemsData = {
-    labels: ["Paneer Tikka", "Dal Makhani", "Garlic Naan", "Mango Lassi", "Butter Chicken", "Chole Bhature"],
+    labels: dashboardData.topSellingItems.labels,
     datasets: [
       {
         label: "Orders",
-        data: [120, 98, 160, 75, 140, 110],
+        data: dashboardData.topSellingItems.data,
         backgroundColor: [
           "#22c55e", "#16a34a", "#15803d", "#166534", "#14532d", "#052e16"
         ],
@@ -83,10 +109,10 @@ const DashboardContent = () => {
   };
 
   const menuCategoriesData = {
-    labels: ["Main Course", "Appetizers", "Beverages", "Desserts", "Breads"],
+    labels: dashboardData.menuCategories.labels,
     datasets: [
       {
-        data: [35, 20, 15, 10, 20],
+        data: dashboardData.menuCategories.data,
         backgroundColor: [
           "#6366f1", "#22c55e", "#ffffff", "#ef4444", "#8b5cf6"
         ],
@@ -129,6 +155,35 @@ const DashboardContent = () => {
         }
       }
     },
+    scales: {
+      x: {
+        ticks: {
+          color: '#ffffff',
+          font: {
+            size: 12,
+            weight: '500'
+          }
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
+        }
+      },
+      y: {
+        ticks: {
+          color: '#ffffff',
+          font: {
+            size: 12,
+            weight: '500'
+          },
+          callback: function(value) {
+            return '₹' + value.toLocaleString();
+          }
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
+        }
+      }
+    },
     animation: {
       duration: 2000,
       easing: 'easeInOutQuart'
@@ -157,10 +212,10 @@ const DashboardContent = () => {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { title: "Total Revenue", value: "₹1,24,500", icon: DollarSign, color: "from-green-500 to-emerald-600", change: "+12.5%" },
-          { title: "Total Orders", value: "1,284", icon: ShoppingCart, color: "from-blue-500 to-indigo-600", change: "+8.2%" },
-          { title: "Active Tables", value: "18/24", icon: Users, color: "from-purple-500 to-pink-600", change: "75%" },
-          { title: "Avg. Rating", value: "4.8", icon: Star, color: "from-yellow-500 to-orange-600", change: "+0.3" },
+          { title: "Total Revenue", value: `₹${dashboardData.totalRevenue.toLocaleString()}`, icon: DollarSign, color: "from-green-500 to-emerald-600", change: `${dashboardData.revenueChange >= 0 ? '+' : ''}${dashboardData.revenueChange}%` },
+          { title: "Total Orders", value: dashboardData.totalOrders.toString(), icon: ShoppingCart, color: "from-blue-500 to-indigo-600", change: `${dashboardData.ordersChange >= 0 ? '+' : ''}${dashboardData.ordersChange}%` },
+          { title: "Active Tables", value: dashboardData.activeTables, icon: Users, color: "from-purple-500 to-pink-600", change: `${dashboardData.activeTablesChange}%` },
+          { title: "Avg. Rating", value: dashboardData.avgRating.toString(), icon: Star, color: "from-yellow-500 to-orange-600", change: `${dashboardData.ratingChange >= 0 ? '+' : ''}${dashboardData.ratingChange}` },
         ].map((card, i) => (
           <div
             key={i}

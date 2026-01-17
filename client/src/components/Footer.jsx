@@ -11,9 +11,9 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-black text-gray-300">
+    <footer className="bg-gradient-to-b from-[#0e1a35] via-[#162544] to-[#0e1a35] text-gray-300">
       {/* Top Highlight Strip */}
-      <div className="border-b border-gray-800">
+      <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <div>
             <p className="text-white font-semibold">Freshly Cooked</p>
@@ -97,7 +97,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-800 py-5 text-center text-xs text-gray-500">
+      <div className="border-t border-white/10 py-5 text-center text-xs text-gray-400">
         © {new Date().getFullYear()} SavoryBites · Crafted for modern dining experience
       </div>
     </footer>

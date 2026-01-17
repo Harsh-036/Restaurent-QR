@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import Navbar from './navbar';
+import Footer from './Footer';
 
 const ProtectRoute = ({ children, requiredRole }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -118,10 +119,13 @@ const ProtectRoute = ({ children, requiredRole }) => {
     return null; // Will redirect in useEffect
   }
 
+  const userRole = localStorage.getItem('userRole');
+
   return (
     <div>
       <Navbar />
       {children}
+      {userRole !== 'admin' && <Footer />}
     </div>
   );
 };

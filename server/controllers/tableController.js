@@ -12,30 +12,12 @@ export const createTable = async (req, res) => {
     const qrSlug = crypto.randomBytes(6).toString("hex");
     console.log(qrSlug);
 
-    //networ api setup
-    console.log(os.networkInterfaces()["Wi-Fi"]);
-const networks = os.networkInterfaces();
-let ipAddress = null;
-
-for (const name of Object.keys(networks)) {
-  for (const el of networks[name]) {
-    if (el.family === "IPv4" && !el.internal) {
-      ipAddress = el.address;
-      break;
-    }
-  }
-  if (ipAddress) break;
-}
-
-if (!ipAddress) {
-  throw new Error("No IPv4 address found");
-}
-
-console.log("Using IP:", ipAddress);
-
+    // Use configurable base URL for QR code generation
+    const baseURL = process.env.QR_BASE_URL || 'http://localhost:5173';
+    console.log("Using base URL for QR:", baseURL);
 
     //generate qr code url
-    const qrCodeURL = `http://${ipAddress}:5173/welcome?qr=${qrSlug}`;
+    const qrCodeURL = `${baseURL}/welcome?qr=${qrSlug}`;
     console.log(qrCodeURL);
 
     //embed this qrCodeURL with qrCode

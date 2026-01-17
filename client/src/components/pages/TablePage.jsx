@@ -99,6 +99,15 @@ const TablePage = () => {
     }
   };
 
+  const handleDownloadQR = (table) => {
+    const link = document.createElement('a');
+    link.href = table.qrImage;
+    link.download = `table-${table.tableNumber}-qr.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-20">
       {/* Fixed Sidebar */}
@@ -273,6 +282,12 @@ const TablePage = () => {
                     className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white text-sm font-medium transition"
                   >
                     Edit
+                  </button>
+                  <button
+                    onClick={() => handleDownloadQR(table)}
+                    className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white text-sm font-medium transition"
+                  >
+                    Download QR
                   </button>
                   <button
                     onClick={() => handleDeleteClick(table._id)}
