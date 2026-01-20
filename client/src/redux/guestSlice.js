@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
 const initialState = {
   sessionToken: null,
   sessionId: null,
@@ -12,7 +15,7 @@ const initialState = {
 export const session = createAsyncThunk('/session', async (data, thunkApi) => {
   try {
     console.log(thunkApi);
-    const res = await axios.post('http://localhost:3000/api/session', data);
+    const res = await axios.post(`${API_BASE_URL}/session`, data);
     return res.data;
   } catch (error) {
     console.log(error);
