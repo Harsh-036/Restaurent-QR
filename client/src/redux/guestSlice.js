@@ -12,7 +12,7 @@ const initialState = {
 export const session = createAsyncThunk('/session', async (data, thunkApi) => {
   try {
     console.log(thunkApi);
-    const res = await axios.post('https://restaurent-qr.onrender.com/api/session', data);
+    const res = await axios.post('http://localhost:3000/api/session', data);
     return res.data;
   } catch (error) {
     console.log(error);

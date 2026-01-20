@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
 // Async thunk for getting coupons (filtered by cart total)
 export const getCoupons = createAsyncThunk(
   'coupon/getCoupons',
@@ -11,7 +14,7 @@ export const getCoupons = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch(`http://localhost:3000/api/coupans?cartTotal=${cartTotal}`, {
+      const response = await fetch(`${API_BASE_URL}/coupans?cartTotal=${cartTotal}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -40,7 +43,7 @@ export const getAllCoupons = createAsyncThunk(
       if (!token) throw new Error('No authentication token found');
 
       // Fetch all coupons with high cartTotal to make them available for admin view
-      const response = await fetch(`http://localhost:3000/api/coupans?cartTotal=100000`, {
+      const response = await fetch(`${API_BASE_URL}/coupans?cartTotal=100000`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -68,7 +71,7 @@ export const createCoupon = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch(`http://localhost:3000/api/coupans`, {
+      const response = await fetch(`${API_BASE_URL}/coupans`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +101,7 @@ export const updateCoupon = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch(`http://localhost:3000/api/coupans/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/coupans/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +131,7 @@ export const deleteCoupon = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch(`http://localhost:3000/api/coupans/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/coupans/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

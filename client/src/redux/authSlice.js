@@ -1,12 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { migrateCart } from './cartSlice';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // Async thunk for login
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:3000/api/login', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,7 +33,7 @@ export const signupUser = createAsyncThunk(
   'auth/signupUser',
   async ({ name, email, phone, password }, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:3000/api/register', {
+      const response = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +59,7 @@ export const updateUser = createAsyncThunk(
   async ({ id, name, email, phone, password }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(`http://localhost:3000/api/update-user/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/update-user/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +86,7 @@ export const getUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch('http://localhost:3000/api/user', {
+      const response = await fetch(`${API_BASE_URL}/user`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -109,7 +111,7 @@ export const deleteUser = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(`http://localhost:3000/api/delete-user/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/delete-user/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -133,7 +135,7 @@ export const googleSignIn = createAsyncThunk(
   'auth/googleSignIn',
   async ({ idToken }, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:3000/api/google-signin', {
+      const response = await fetch(`${API_BASE_URL}/google-signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

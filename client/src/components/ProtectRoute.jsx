@@ -5,6 +5,8 @@ import { jwtDecode } from 'jwt-decode';
 import Navbar from './navbar';
 import Footer from './Footer';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const ProtectRoute = ({ children, requiredRole }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ const ProtectRoute = ({ children, requiredRole }) => {
       if (!refreshToken) return false;
 
       try {
-        const response = await axios.post('http://localhost:3000/api/refresh-token', {
+        const response = await axios.post(`${API_BASE_URL}/refresh-token`, {
           refreshToken,
         });
         const { accessToken } = response.data;
@@ -53,7 +55,7 @@ const ProtectRoute = ({ children, requiredRole }) => {
     // Validate token by making a test request
     const validateToken = async (currentToken) => {
       try {
-        await axios.get('http://localhost:3000/menu', {
+        await axios.get(`${API_BASE_URL}/menu`, {
           headers: {
             Authorization: `Bearer ${currentToken}`,
           },

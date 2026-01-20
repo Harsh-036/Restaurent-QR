@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 //interceptors
 api.interceptors.request.use((config) => {
@@ -25,7 +25,7 @@ console.log(error.config)
     if (error.response.status === 401) {
       try {
         const response = await axios.post(
-          'http://localhost:3000/api/refresh-token',
+          `${import.meta.env.VITE_API_BASE_URL}/refresh-token`,
           { refreshToken: localStorage.getItem('refreshToken') }
         );
         console.log('token' ,response.data.accessToken);

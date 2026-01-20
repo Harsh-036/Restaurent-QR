@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const ResetPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,7 +16,7 @@ const ResetPassword = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/find-account', {
+      const response = await fetch(`${API_BASE_URL}/find-account`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +46,7 @@ const ResetPassword = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/reset-password', {
+      const response = await fetch(`${API_BASE_URL}/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

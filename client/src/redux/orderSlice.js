@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // Async thunk for fetching orders
 export const fetchOrders = createAsyncThunk(
   'order/fetchOrders',
@@ -13,7 +15,7 @@ export const fetchOrders = createAsyncThunk(
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:3000/api/orders', {
+      const response = await fetch(`${API_BASE_URL}/orders`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -43,7 +45,7 @@ export const updateOrderStatus = createAsyncThunk(
         throw new Error('No access token found');
       }
 
-      const response = await fetch(`http://localhost:3000/api/orders/${orderId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${accessToken}`,

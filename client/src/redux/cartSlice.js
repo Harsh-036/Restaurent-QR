@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // Async thunk for adding item to cart
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
@@ -11,7 +13,7 @@ export const addToCart = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch('http://localhost:3000/api/addtocart', {
+      const response = await fetch(`${API_BASE_URL}/addtocart`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -41,7 +43,7 @@ export const getCart = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch('http://localhost:3000/api/getcart', {
+      const response = await fetch(`${API_BASE_URL}/getcart`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -69,7 +71,7 @@ export const increaseItemQuantity = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch('http://localhost:3000/api/increaseitem', {
+      const response = await fetch(`${API_BASE_URL}/increaseitem`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -99,7 +101,7 @@ export const decreaseItemQuantity = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch('http://localhost:3000/api/decreaseitem', {
+      const response = await fetch(`${API_BASE_URL}/decreaseitem`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -129,7 +131,7 @@ export const removeItem = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch('http://localhost:3000/api/removeitem', {
+      const response = await fetch(`${API_BASE_URL}/removeitem`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -157,7 +159,7 @@ export const migrateCart = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch('http://localhost:3000/api/migratecart', {
+      const response = await fetch(`${API_BASE_URL}/migratecart`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -187,7 +189,7 @@ export const placeOrder = createAsyncThunk(
 
       if (!token) throw new Error('No authentication token found');
 
-      const response = await fetch('http://localhost:3000/api/orders', {
+      const response = await fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -211,7 +213,7 @@ export const verifyPayment = createAsyncThunk(
   'cart/verifyPayment',
   async ({ paymentId, razorPayOrderId, signature }, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:3000/api/verify/payment', {
+      const response = await fetch(`${API_BASE_URL}/verify/payment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

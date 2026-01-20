@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
 // Async thunk for fetching menu
 export const fetchMenu = createAsyncThunk(
   'menu/fetchMenu',
@@ -21,7 +24,7 @@ export const fetchMenu = createAsyncThunk(
         queryParams.append('category', category);
       }
 
-      const response = await fetch(`http://localhost:3000/api/menu?${queryParams.toString()}`, {
+      const response = await fetch(`${API_BASE_URL}/menu?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -51,7 +54,7 @@ export const createMenu = createAsyncThunk(
         throw new Error('No access token found');
       }
 
-      const response = await fetch('http://localhost:3000/api/menu', {
+      const response = await fetch(`${API_BASE_URL}/menu`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -81,7 +84,7 @@ export const updateMenu = createAsyncThunk(
         throw new Error('No access token found');
       }
 
-      const response = await fetch(`http://localhost:3000/api/menu/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/menu/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -111,7 +114,7 @@ export const deleteMenu = createAsyncThunk(
         throw new Error('No access token found');
       }
 
-      const response = await fetch(`http://localhost:3000/api/menu/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/menu/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -139,7 +142,7 @@ export const toggleAvailability = createAsyncThunk(
         throw new Error('No access token found');
       }
 
-      const response = await fetch(`http://localhost:3000/api/menu/${id}/availability`, {
+      const response = await fetch(`${API_BASE_URL}/menu/${id}/availability`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${accessToken}`,

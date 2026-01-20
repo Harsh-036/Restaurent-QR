@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
 const ForgetPassword = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -40,7 +43,7 @@ const ForgetPassword = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/forget-password', {
+      const response = await fetch(`${API_BASE_URL}/forget-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

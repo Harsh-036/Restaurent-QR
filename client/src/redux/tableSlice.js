@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // Async thunk for creating a table
 export const createTable = createAsyncThunk(
   'table/createTable',
@@ -15,7 +17,7 @@ export const createTable = createAsyncThunk(
 
       console.log('Creating table with data:', { tableNumber, capacity });
 
-      const response = await fetch('http://localhost:3000/api/tables', {
+      const response = await fetch(`${API_BASE_URL}/tables`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -65,7 +67,7 @@ export const fetchTables = createAsyncThunk(
 
       console.log('Fetching tables with token:', token ? 'Token present' : 'No token');
 
-      const response = await fetch('http://localhost:3000/api/tables', {
+      const response = await fetch(`${API_BASE_URL}/tables`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -114,7 +116,7 @@ export const updateTable = createAsyncThunk(
 
       console.log('Updating table with id:', id);
 
-      const response = await fetch(`http://localhost:3000/api/tables/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/tables/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -164,7 +166,7 @@ export const toggleTableStatus = createAsyncThunk(
 
       console.log('Toggling table status with id:', id);
 
-      const response = await fetch(`http://localhost:3000/api/tables/${id}/toggle`, {
+      const response = await fetch(`${API_BASE_URL}/tables/${id}/toggle`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -213,7 +215,7 @@ export const deleteTable = createAsyncThunk(
 
       console.log('Deleting table with id:', id);
 
-      const response = await fetch(`http://localhost:3000/api/tables/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/tables/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

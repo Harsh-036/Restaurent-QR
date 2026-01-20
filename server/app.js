@@ -23,7 +23,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "https://restaurent-qr.vercel.app"],
+    origin: ["http://localhost:5173" || "https://restaurent-qr.vercel.app"],
     methods: ["GET", "POST"]
   }
 });
@@ -56,8 +56,8 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
-        // Allow localhost on port 5173
-        if (origin === 'http://localhost:5173' , 'http://192.168.1.35:5173') {
+        // Allow localhost on port 5173 and production frontend
+        if (origin === 'http://localhost:5173' || origin === 'http://192.168.1.35:5173' || origin === 'https://restaurent-qr.vercel.app') {
             return callback(null, true);
         }
 
