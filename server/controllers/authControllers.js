@@ -266,7 +266,7 @@ export const resetPassword = async (req, res) => {
     await user.save();
 
     // Send reset email
-    const resetUrl = `http://localhost:5173/forgetpassword?token=${resetToken}`;
+    const resetUrl = `${process.env.QR_BASE_URL || 'http://localhost:5173'}/forgetpassword?token=${resetToken}`;
     const mailOptions = {
       from: "sharmaharshharsh1234@gmail.com",
       to: user.email,
