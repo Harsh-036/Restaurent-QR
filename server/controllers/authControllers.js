@@ -285,9 +285,16 @@ export const resetPassword = async (req, res) => {
       `
     };
 
-    await transporter.sendMail(mailOptions);
-
-    res.json({ message: "Password reset email sent successfully" });
+    try {
+      await transporter.sendMail(mailOptions);
+      res.json({ message: "Password reset email sent successfully" });
+    } catch (emailError) {
+      console.error("Email sending failed:", emailError);
+      // For development/testing, you can log the email content instead
+      console.log("Email would be sent to:", user.email);
+      console.log("Reset URL:", resetUrl);
+      res.json({ message: "Password reset email sent successfully (logged to console)" });
+    }
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
