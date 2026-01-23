@@ -3,14 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Menu } from 'lucide-react';
 import { fetchMenu, createMenu, updateMenu, deleteMenu, toggleAvailability, addMenu, updateMenuAction, removeMenu, updateMenuAvailability } from "../../redux/menuSlice";
+import { closeSidebar } from "../../redux/uiSlice";
 import Sidebar from "../Sidebar";
 import socketService from "../../lib/socket";
 
 const MenuPage = () => {
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const dispatch = useDispatch();
+  const sidebarOpen = useSelector((state) => state.ui.sidebarOpen);
   const { items: menuItems = [], categories: allCategories = [], pagination, loading, error } = useSelector((state) => state.menu);
   const { user } = useSelector((state) => state.auth);
   const userRole = localStorage.getItem('userRole');
@@ -93,7 +94,7 @@ const MenuPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-20">
+    <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-15 md:mt-20">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => {}} />
 

@@ -3,14 +3,15 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTables, createTable, updateTable as updateTableThunk, toggleTableStatus, deleteTable, addTable, updateTableAction, removeTable, updateTableStatus } from '../../redux/tableSlice';
+import { closeSidebar } from '../../redux/uiSlice';
 import Sidebar from '../Sidebar';
 import socketService from "../../lib/socket";
 
 
 const TablePage = () => {
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
+  const sidebarOpen = useSelector((state) => state.ui.sidebarOpen);
   const { tables, loading, error } = useSelector((state) => state.table);
   const [editingTable, setEditingTable] = useState(null);
   const [editForm, setEditForm] = useState({ tableNumber: '', capacity: '' });
@@ -111,14 +112,14 @@ const TablePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-20">
+    <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-15 md:mt-20">
       {/* Mobile Menu Button */}
-      <button
+      {/* <button
         onClick={() => setSidebarOpen(true)}
         className="md:hidden fixed top-24 left-4 z-30 p-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg text-white"
       >
         <Menu className="w-6 h-6" />
-      </button>
+      </button> */}
 
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />

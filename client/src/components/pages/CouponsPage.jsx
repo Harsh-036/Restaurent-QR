@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getAllCoupons, createCoupon, updateCoupon, deleteCoupon, addCoupon, updateCouponAction, removeCoupon } from '../../redux/couponSlice';
+import { closeSidebar } from '../../redux/uiSlice';
 import Sidebar from '../Sidebar';
 import socketService from '../../lib/socket';
 
 
 const CouponsPage = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
+  const sidebarOpen = useSelector((state) => state.ui.sidebarOpen);
   const { coupons, loading, error } = useSelector((state) => state.coupon);
   const [showForm, setShowForm] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
@@ -133,7 +134,7 @@ const CouponsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-20">
+    <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-15 md:mt-20">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => {}} />
 
