@@ -94,16 +94,8 @@ const MenuPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-20">
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className="md:hidden fixed top-24 left-4 z-30 p-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg text-white"
-      >
-        <Menu className="w-6 h-6" />
-      </button>
-
       {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar isOpen={sidebarOpen} onClose={() => {}} />
 
       {/* Main Content */}
       <div className="md:ml-64 p-4 md:p-6 flex justify-center items-start min-h-screen">
@@ -117,17 +109,17 @@ const MenuPage = () => {
 
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-4xl font-bold text-white mb-3">
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-3">
             Explore Our Menu
           </h2>
-          <p className="text-gray-300">
+          <p className="text-gray-300 text-sm md:text-base">
             Freshly prepared vegetarian dishes crafted with love
           </p>
           {/* Admin Create Button */}
           {userRole === 'admin' && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              className="mt-4 px-4 py-2 md:px-6 md:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               Create Menu Item
             </button>
@@ -194,7 +186,7 @@ const MenuPage = () => {
         {/* Menu Cards */}
         {!loading && !error && filteredItems.length > 0 && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
               {filteredItems.map((item) => (
                 <div
                   key={item._id}
@@ -203,10 +195,10 @@ const MenuPage = () => {
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="h-48 w-full object-cover"
+                    className="h-32 md:h-48 w-full object-cover"
                   />
 
-                  <div className="p-5 space-y-3">
+                  <div className="p-4 md:p-5 space-y-3">
                     <div className="flex justify-between items-center">
                       <h3 className="text-lg font-semibold text-white">
                         {item.name}
@@ -323,9 +315,9 @@ const MenuPage = () => {
 
         {/* Create/Edit Modal */}
         {(showCreateModal || showEditModal) && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg w-full max-w-md">
-              <h3 className="text-xl font-bold mb-4 text-black">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-4 md:p-6 rounded-lg w-full max-w-md">
+              <h3 className="text-lg md:text-xl font-bold mb-4 text-black">
                 {showCreateModal ? 'Create Menu Item' : 'Edit Menu Item'}
               </h3>
               <form onSubmit={handleSubmit}>

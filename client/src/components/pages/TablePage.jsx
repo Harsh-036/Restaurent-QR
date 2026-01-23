@@ -127,10 +127,10 @@ const TablePage = () => {
       <div className="md:ml-64 p-4 md:p-6 flex justify-center items-start min-h-screen">
         <div className="w-full max-w-6xl">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-white">All Tables</h1>
+            <h1 className="text-xl md:text-4xl font-bold text-white">All Tables</h1>
             <button
               onClick={() => setShowCreateForm(true)}
-              className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition"
+              className="px-4 py-2 md:px-6 md:py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition"
             >
               Create New Table
             </button>
@@ -138,8 +138,8 @@ const TablePage = () => {
 
           {/* Create Form */}
           {showCreateForm && (
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 mb-8">
-              <h2 className="text-2xl font-semibold text-white mb-4">Create New Table</h2>
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 md:p-6 mb-6 md:mb-8">
+              <h2 className="text-xl md:text-2xl font-semibold text-white mb-4">Create New Table</h2>
               <form onSubmit={handleCreateSubmit}>
                 <div className="mb-4">
                   <label className="block text-gray-300 text-sm mb-2">Table Number</label>
@@ -164,7 +164,7 @@ const TablePage = () => {
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white text-sm font-medium transition"
+                    className="flex-1 px-3 py-2 md:px-4 md:py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white text-sm font-medium transition"
                   >
                     Create Table
                   </button>
@@ -174,7 +174,7 @@ const TablePage = () => {
                       setShowCreateForm(false);
                       setCreateForm({ tableNumber: '', capacity: '' });
                     }}
-                    className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white text-sm font-medium transition"
+                    className="flex-1 px-3 py-2 md:px-4 md:py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white text-sm font-medium transition"
                   >
                     Cancel
                   </button>
@@ -199,11 +199,11 @@ const TablePage = () => {
 
         {/* Tables Grid */}
         {!loading && !error && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {tables.map((table) => (
               <div
                 key={table.tableNumber}
-                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:border-blue-500 transition"
+                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 md:p-6 hover:border-blue-500 transition"
               >
                 {editingTable === table._id ? (
                   <form onSubmit={handleEditSubmit} className="mb-4">
@@ -230,14 +230,14 @@ const TablePage = () => {
                     <div className="flex gap-2">
                       <button
                         type="submit"
-                        className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white text-sm font-medium transition"
+                        className="flex-1 px-3 py-2 md:px-4 md:py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white text-sm font-medium transition"
                       >
                         Save
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditingTable(null)}
-                        className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white text-sm font-medium transition"
+                        className="flex-1 px-3 py-2 md:px-4 md:py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white text-sm font-medium transition"
                       >
                         Cancel
                       </button>
@@ -278,9 +278,9 @@ const TablePage = () => {
                 {/* QR Code Image */}
                 <div className="bg-white/5 rounded-lg p-4 mb-4">
                   {table.qrImage ? (
-                    <img src={table.qrImage} alt={`QR Code for Table ${table.tableNumber}`} className="w-full h-32 object-contain" />
+                    <img src={table.qrImage} alt={`QR Code for Table ${table.tableNumber}`} className="w-full h-24 md:h-32 object-contain" />
                   ) : (
-                    <div className="w-full h-32 bg-gray-600 rounded flex items-center justify-center">
+                    <div className="w-full h-24 md:h-32 bg-gray-600 rounded flex items-center justify-center">
                       <span className="text-gray-400 text-sm">QR Code Image</span>
                     </div>
                   )}

@@ -1,7 +1,6 @@
 import Sidebar from '../Sidebar';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Menu } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders, addOrder, updateOrder, removeOrder, updateOrderStatus } from '../../redux/orderSlice';
 import socketService from '../../lib/socket';
@@ -75,7 +74,7 @@ const OrdersPage = () => {
       {/* Main Content */}
       <div className="md:ml-64 p-4 md:p-6 flex justify-center items-start min-h-screen">
         <div className="w-full max-w-6xl">
-          <h1 className="text-4xl font-bold text-white mb-8">All Orders</h1>
+          <h1 className="text-xl md:text-4xl font-bold text-white mb-6 md:mb-8">All Orders</h1>
 
           {loading && (
             <div className="text-center py-12">
@@ -109,7 +108,7 @@ const OrdersPage = () => {
                         <select
                           value={order.orderStatus}
                           onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.orderStatus)} bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-sm font-medium ${getStatusColor(order.orderStatus)} bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                         >
                           <option value="pending">Pending</option>
                           <option value="preparing">Preparing</option>

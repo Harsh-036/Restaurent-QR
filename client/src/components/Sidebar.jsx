@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { closeSidebar } from '../redux/uiSlice';
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen }) => {
   const location = useLocation();
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -10,7 +13,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={onClose}
+          onClick={() => dispatch(closeSidebar())}
         />
       )}
 
@@ -26,7 +29,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className={`block py-2 px-4 rounded transition ${
                 location.pathname === '/dashboard' ? 'bg-white/20' : 'hover:bg-white/10'
               }`}
-              onClick={onClose}
+              onClick={() => dispatch(closeSidebar())}
             >
               Dashboard
             </Link>
@@ -37,7 +40,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className={`block py-2 px-4 rounded transition ${
                 location.pathname === '/table' ? 'bg-white/20' : 'hover:bg-white/10'
               }`}
-              onClick={onClose}
+              onClick={() => dispatch(closeSidebar())}
             >
               Table
             </Link>
@@ -48,7 +51,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className={`block py-2 px-4 rounded transition ${
                 location.pathname === '/menu' ? 'bg-white/20' : 'hover:bg-white/10'
               }`}
-              onClick={onClose}
+              onClick={() => dispatch(closeSidebar())}
             >
               Menu
             </Link>
@@ -59,7 +62,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className={`block py-2 px-4 rounded transition ${
                 location.pathname === '/orders' ? 'bg-white/20' : 'hover:bg-white/10'
               }`}
-              onClick={onClose}
+              onClick={() => dispatch(closeSidebar())}
             >
               Orders
             </Link>
@@ -70,7 +73,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className={`block py-2 px-4 rounded transition ${
                 location.pathname === '/coupans' ? 'bg-white/20' : 'hover:bg-white/10'
               }`}
-              onClick={onClose}
+              onClick={() => dispatch(closeSidebar())}
             >
               Coupans
             </Link>

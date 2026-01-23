@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/authSlice";
-import { ShoppingCart } from "lucide-react";
+import { toggleSidebar } from "../redux/uiSlice";
+import { ShoppingCart, Menu } from "lucide-react";
 
 const Navbar = () => {
   const userName = localStorage.getItem("userName") || "Guest";
@@ -47,13 +48,21 @@ const Navbar = () => {
   return (
     <nav
       className="
-      fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-4
+      fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 py-2 md:px-8 md:py-4
       bg-gradient-to-br from-[#0e1a35]/80 via-[#162544]/80 to-[#0e1a35]/80
       text-white shadow-xl border-b border-white/20 backdrop-blur-md
     "
     >
+      {/* MOBILE TOGGLE BUTTON */}
+      <button
+        onClick={() => dispatch(toggleSidebar())}
+        className="md:hidden p-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg text-white mr-4"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+
       {/* LEFT - LOGO */}
-      <div className="text-2xl font-extrabold tracking-wide drop-shadow-md">
+      <div className="text-xl md:text-2xl font-extrabold tracking-wide drop-shadow-md">
         <Link to="/">Restaurant QR</Link>
       </div>
 
@@ -96,7 +105,7 @@ const Navbar = () => {
           <div
             className="
             flex items-center space-x-3 bg-white/10
-            px-4 py-2 rounded-xl border border-white/20
+            px-2 py-1 md:px-4 md:py-2 rounded-xl border border-white/20
             shadow-lg backdrop-blur-md
           "
           >
@@ -124,7 +133,7 @@ const Navbar = () => {
           <div
             className="
             flex items-center space-x-3 bg-white/10
-            px-4 py-2 rounded-xl border border-white/20
+            px-2 py-1 md:px-4 md:py-2 rounded-xl border border-white/20
             shadow-lg backdrop-blur-md
           "
           >
