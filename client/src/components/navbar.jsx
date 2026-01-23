@@ -73,6 +73,22 @@ const Navbar = () => {
         )}
       </div>
 
+      {/* MOBILE CART ICON */}
+      {userRole !== "admin" && (
+        <div className="md:hidden">
+          <button
+            className="relative p-2 text-gray-300 hover:text-white transition-colors"
+            aria-label="Shopping cart"
+            onClick={() => navigate("/cart")}
+          >
+            <ShoppingCart className="w-6 h-6" />
+            <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {cartItems.length}
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* RIGHT - USER BOX with DROPDOWN or REGISTER LINK */}
       {userRole === "guest" ? (
         <div className="flex items-center space-x-4">

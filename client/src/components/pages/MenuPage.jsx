@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Menu } from 'lucide-react';
 import { fetchMenu, createMenu, updateMenu, deleteMenu, toggleAvailability, addMenu, updateMenuAction, removeMenu, updateMenuAvailability } from "../../redux/menuSlice";
 import Sidebar from "../Sidebar";
 import socketService from "../../lib/socket";
 
 const MenuPage = () => {
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const dispatch = useDispatch();
   const { items: menuItems = [], categories: allCategories = [], pagination, loading, error } = useSelector((state) => state.menu);
@@ -92,11 +94,19 @@ const MenuPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-20">
-      {/* Fixed Sidebar */}
-      <Sidebar/>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="md:hidden fixed top-24 left-4 z-30 p-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg text-white"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+
+      {/* Sidebar */}
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <div className="ml-64 p-6 flex justify-center items-start min-h-screen">
+      <div className="md:ml-64 p-4 md:p-6 flex justify-center items-start min-h-screen">
         <div className="w-full max-w-6xl">
           {/* MENU SECTION */}
           <section

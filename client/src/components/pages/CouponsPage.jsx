@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import { getAllCoupons, createCoupon, updateCoupon, deleteCoupon, addCoupon, updateCouponAction, removeCoupon } from '../../redux/couponSlice';
 import Sidebar from '../Sidebar';
 import socketService from '../../lib/socket';
 
 
 const CouponsPage = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
   const { coupons, loading, error } = useSelector((state) => state.coupon);
   const [showForm, setShowForm] = useState(false);
@@ -133,11 +135,19 @@ const CouponsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1a35] via-[#162544] to-[#0e1a35] text-white mt-20">
-      {/* Fixed Sidebar */}
-      <Sidebar/>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="md:hidden fixed top-24 left-4 z-30 p-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg text-white"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+
+      {/* Sidebar */}
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <div className="ml-64 p-6 flex justify-center items-start min-h-screen">
+      <div className="md:ml-64 p-4 md:p-6 flex justify-center items-start min-h-screen">
         <div className="w-full max-w-6xl bg-white/10 backdrop-blur-2xl rounded-3xl shadow-2xl p-10 border border-white/20">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Coupons Management</h1>
