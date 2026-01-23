@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMenu } from "../redux/menuSlice";
+import { fetchMenu, updateMenuAvailability } from "../redux/menuSlice";
 import { addToCart } from "../redux/cartSlice";
 import Hero from "../components/Hero";
+import socketService from "../lib/socket";
 // import Footer from "./Footer";
 
 const Main = () => {
@@ -15,6 +16,21 @@ const Main = () => {
   useEffect(() => {
     dispatch(fetchMenu({ page: currentPage, category: selectedCategory }));
   }, [dispatch, currentPage, selectedCategory]);
+
+  // WebSocket connection and event listeners for real-time updates
+  useEffect(() => {
+    socketService.connect();
+
+    // Listen for menu availability changes
+    socketService.onMenuAvailabilityChanged((updatedMenu) => {
+      dispatch(updateMenuAvailability(updatedMenu));
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socketService.off('menu:availabilityChanged');
+    };
+  }, [dispatch]);
 
   // Use categories from Redux
   const categories = allCategories;
