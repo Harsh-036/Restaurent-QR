@@ -193,24 +193,24 @@ const DashboardContent = () => {
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-xl border border-white/20 rounded-3xl p-4 md:p-8 shadow-2xl">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               Restaurant Dashboard
             </h1>
-            <p className="text-white/70 mt-2 text-lg">Monitor your restaurant's performance in real-time</p>
+            <p className="text-white/70 mt-2 text-base md:text-lg">Monitor your restaurant's performance in real-time</p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="bg-white/10 rounded-full p-3">
-              <ChefHat className="w-8 h-8 text-blue-400" />
+            <div className="bg-white/10 rounded-full p-2 md:p-3">
+              <ChefHat className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           { title: "Total Revenue", value: `₹${dashboardData.totalRevenue.toLocaleString()}`, icon: DollarSign, color: "from-green-500 to-emerald-600", change: `${dashboardData.revenueChange >= 0 ? '+' : ''}${dashboardData.revenueChange}%` },
           { title: "Total Orders", value: dashboardData.totalOrders.toString(), icon: ShoppingCart, color: "from-blue-500 to-indigo-600", change: `${dashboardData.ordersChange >= 0 ? '+' : ''}${dashboardData.ordersChange}%` },
@@ -219,89 +219,89 @@ const DashboardContent = () => {
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
+            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-4 md:p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className={`bg-gradient-to-r ${card.color} rounded-2xl p-3 group-hover:scale-110 transition-transform duration-300`}>
-                <card.icon className="w-6 h-6 text-white" />
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <div className={`bg-gradient-to-r ${card.color} rounded-2xl p-2 md:p-3 group-hover:scale-110 transition-transform duration-300`}>
+                <card.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
-              <span className="text-green-400 text-sm font-semibold">{card.change}</span>
+              <span className="text-green-400 text-xs md:text-sm font-semibold">{card.change}</span>
             </div>
-            <p className="text-sm text-white/70 mb-1">{card.title}</p>
-            <h3 className="text-3xl font-bold text-white">{card.value}</h3>
+            <p className="text-xs md:text-sm text-white/70 mb-1">{card.title}</p>
+            <h3 className="text-2xl md:text-3xl font-bold text-white">{card.value}</h3>
           </div>
         ))}
       </div>
 
       {/* Revenue Chart */}
-      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-xl">
-        <div className="flex items-center justify-between mb-8">
+      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-4 md:p-8 shadow-xl">
+        <div className="flex items-center justify-between mb-4 md:mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">Weekly Revenue Trend</h2>
-            <p className="text-white/70">Revenue performance over the past week</p>
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Weekly Revenue Trend</h2>
+            <p className="text-white/70 text-sm md:text-base">Revenue performance over the past week</p>
           </div>
-          <TrendingUp className="w-8 h-8 text-green-400" />
+          <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-green-400" />
         </div>
-        <div className="h-80">
+        <div className="h-48 sm:h-64 lg:h-80">
           <Line data={revenueData} options={chartOptions} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
         {/* Order Distribution */}
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-xl">
-          <div className="flex items-center justify-between mb-8">
+        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-4 md:p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-4 md:mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Order Distribution</h2>
-              <p className="text-white/70">Breakdown by order type</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Order Distribution</h2>
+              <p className="text-white/70 text-sm md:text-base">Breakdown by order type</p>
             </div>
-            <Utensils className="w-8 h-8 text-blue-400" />
+            <Utensils className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
           </div>
-          <div className="h-64">
+          <div className="h-48 sm:h-56 lg:h-64">
             <Doughnut data={orderTypeData} options={chartOptions} />
           </div>
         </div>
 
         {/* Top Selling Items */}
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-xl">
-          <div className="flex items-center justify-between mb-8">
+        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-4 md:p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-4 md:mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Top Selling Items</h2>
-              <p className="text-white/70">Most popular menu items this week</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Top Selling Items</h2>
+              <p className="text-white/70 text-sm md:text-base">Most popular menu items this week</p>
             </div>
-            <Star className="w-8 h-8 text-yellow-400" />
+            <Star className="w-6 h-6 md:w-8 md:h-8 text-yellow-400" />
           </div>
-          <div className="h-64">
+          <div className="h-48 sm:h-56 lg:h-64">
             <Bar data={topItemsData} options={chartOptions} />
           </div>
         </div>
       </div>
 
       {/* Menu Categories */}
-      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-xl">
-        <div className="flex items-center justify-between mb-8">
+      <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-4 md:p-8 shadow-xl">
+        <div className="flex items-center justify-between mb-4 md:mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">Menu Categories Distribution</h2>
-            <p className="text-white/70">Overview of your menu composition</p>
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Menu Categories Distribution</h2>
+            <p className="text-white/70 text-sm md:text-base">Overview of your menu composition</p>
           </div>
-          <ChefHat className="w-8 h-8 text-purple-400" />
+          <ChefHat className="w-6 h-6 md:w-8 md:h-8 text-purple-400" />
         </div>
         <div className="flex flex-col lg:flex-row items-center">
-          <div className="h-80 w-full lg:w-1/2">
+          <div className="h-48 sm:h-64 lg:h-80 w-full lg:w-1/2">
             <Doughnut data={menuCategoriesData} options={chartOptions} />
           </div>
-          <div className="lg:w-1/2 lg:pl-8 mt-8 lg:mt-0">
+          <div className="lg:w-1/2 lg:pl-8 mt-4 md:mt-8 lg:mt-0">
             <div className="space-y-4">
               {menuCategoriesData.labels.map((label, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
+                <div key={index} className="flex items-center justify-between p-2 md:p-4 bg-white/5 rounded-2xl">
                   <div className="flex items-center space-x-3">
                     <div
                       className="w-4 h-4 rounded-full"
                       style={{ backgroundColor: menuCategoriesData.datasets[0].backgroundColor[index] }}
                     ></div>
-                    <span className="text-white font-medium">{label}</span>
+                    <span className="text-white font-medium text-sm md:text-base">{label}</span>
                   </div>
-                  <span className="text-white/70">{menuCategoriesData.datasets[0].data[index]}%</span>
+                  <span className="text-white/70 text-sm md:text-base">{menuCategoriesData.datasets[0].data[index]}%</span>
                 </div>
               ))}
             </div>
@@ -310,8 +310,8 @@ const DashboardContent = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gradient-to-r from-indigo-600/20 to-blue-600/20 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-xl">
-        <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
+      <div className="bg-gradient-to-r from-indigo-600/20 to-blue-600/20 backdrop-blur-xl border border-white/20 rounded-3xl p-4 md:p-8 shadow-xl">
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { label: "Add New Item", icon: ChefHat, color: "bg-blue-500 hover:bg-blue-600" },
@@ -321,9 +321,9 @@ const DashboardContent = () => {
           ].map((action, i) => (
             <button
               key={i}
-              className={`${action.color} text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2`}
+              className={`${action.color} text-white font-semibold py-6 px-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2`}
             >
-              <action.icon className="w-5 h-5" />
+              <action.icon className="w-6 h-6" />
               <span>{action.label}</span>
             </button>
           ))}
