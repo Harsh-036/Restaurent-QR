@@ -110,7 +110,7 @@ const OrdersPage = () => {
                         <select
                           value={order.orderStatus}
                           onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-sm font-medium ${getStatusColor(order.orderStatus)} bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                          className={`px-0 py-1 md:px-3 md:py-1 rounded-full text-sm font-medium ${getStatusColor(order.orderStatus)} bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                         >
                           <option value="pending">Pending</option>
                           <option value="preparing">Preparing</option>
